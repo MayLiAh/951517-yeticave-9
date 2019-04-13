@@ -1,6 +1,5 @@
 <?php
 $isAuth = rand(0, 1);
-
 $userName = 'Майя';
 
 $categories = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
@@ -28,7 +27,18 @@ $goods = [ ['name' => '2014 Rossignol District Snowboard',
            'category' => 'Разное',
            'price' => '5400',
            'imageUrl' => 'img/lot-6.jpg']
-         ];
+];
+
+$getFormattedPrice = function ($price) {
+    $roundPrice = ceil($price);
+
+    if ($roundPrice < 1000) {
+        return $roundPrice;
+    }
+
+    return number_format($roundPrice, 0, '.', ' ');
+};
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -102,7 +112,7 @@ $goods = [ ['name' => '2014 Rossignol District Snowboard',
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?=$good['price']; ?><b class="rub">р</b></span>
+                            <span class="lot__cost"><?=$getFormattedPrice($good['price']); ?><b class="rub">р</b></span>
                         </div>
                         <div class="lot__timer timer">
                             12:23
