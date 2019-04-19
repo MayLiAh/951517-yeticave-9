@@ -2,6 +2,17 @@
 
 require_once 'helpers.php';
 
+const SECONDS_IN_MINUTE = 60;
+const SECONDS_IN_HOUR = 3600;
+
+$now = time();
+$tommorow = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
+$remainingTime = $tommorow - $now;
+$remainingHours = floor($remainingTime / SECONDS_IN_HOUR);
+$remainingMinutes = floor(($remainingTime % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE);
+$format = "%02d:%02d";
+$formattedRemainingTime = sprintf($format, $remainingHours, $remainingMinutes);
+
 $getFormattedPrice = function ($price, $currency = '₽') {
     $intPrice = (int) $price;
     $roundPrice = ceil($intPrice);
@@ -51,7 +62,12 @@ array_walk_recursive($goods, function (&$value, $key) {
 });
 
 $contentAdress = 'index.php';
-$contentValues = ['categories' => $categories, 'goods' => $goods, 'getFormattedPrice' => $getFormattedPrice];
+$contentValues = [ 'categories' => $categories,
+                   'goods' => $goods,
+                   'getFormattedPrice' => $getFormattedPrice,
+                   'remainingHours' => $remainingHours,
+                   'formattedRemainingTime' => $formattedRemainingTime
+                  ];
 
 $pageContent = include_template($contentAdress, $contentValues);
 
