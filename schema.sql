@@ -6,26 +6,26 @@ USE 951517_yeticave_9;
 
 CREATE TABLE users (
   id         INT AUTO_INCREMENT PRIMARY KEY,
-  full_name  VARCHAR(255) NOT NULL,
-  email      VARCHAR(255) NOT NULL UNIQUE,
-  password   VARCHAR(255) NOT NULL,
-  avatar     VARCHAR(255),
-  contacts   VARCHAR(255) NOT NULL,
+  full_name  VARCHAR(50) NOT NULL,
+  email      VARCHAR(50) NOT NULL UNIQUE,
+  password   VARCHAR(60) NOT NULL,
+  avatar     VARCHAR(100),
+  contacts   TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE categories (
   id          INT AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(255),
-  symbol_code VARCHAR(255),
+  name        VARCHAR(30),
+  symbol_code VARCHAR(30),
   UNIQUE(name, symbol_code)
 );
 
 CREATE TABLE lots (
   id          INT AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(255) NOT NULL,
-  about       VARCHAR(255) NOT NULL,
-  image       VARCHAR(255) NOT NULL,
+  name        VARCHAR(70) NOT NULL,
+  about       TEXT NOT NULL,
+  image       VARCHAR(100) NOT NULL,
   start_cost  INT NOT NULL,
   rate_step   INT NOT NULL,
   user_id     INT REFERENCES users (id),
@@ -48,7 +48,7 @@ CREATE INDEX user_name ON users(full_name);
 CREATE UNIQUE INDEX user_email ON users(email);
 CREATE INDEX password ON users(password);
 CREATE INDEX avatar ON users(avatar);
-CREATE INDEX contacts ON users(contacts);
+CREATE FULLTEXT INDEX contacts ON users(contacts);
 
 CREATE UNIQUE INDEX category_id ON categories(id);
 CREATE UNIQUE INDEX category_name ON categories(name);
@@ -56,7 +56,7 @@ CREATE UNIQUE INDEX category_code ON categories(symbol_code);
 
 CREATE UNIQUE INDEX lot_id ON lots(id);
 CREATE INDEX lot_name ON lots(name);
-CREATE INDEX about_lot ON lots(about);
+CREATE FULLTEXT INDEX about_lot ON lots(about);
 CREATE INDEX lot_image ON lots(image);
 CREATE INDEX lot_start_cost ON lots(start_cost);
 CREATE INDEX rate_step ON lots(rate_step);
