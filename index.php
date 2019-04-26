@@ -1,17 +1,37 @@
 <?php
 
 require_once 'helpers.php';
+require_once 'functions.php';
 
-const SECONDS_IN_MINUTE = 60;
-const SECONDS_IN_HOUR = 3600;
+$con = mysqli_connect("localhost", "mayliah", "", "951517_yeticave_9");
 
-$now = time();
+if ($con == false) {
+    print("Ошибка подключения: " . mysqli_connect_error());
+} else {
+    mysqli_set_charset($con, "utf8");
+
+    $lotsSql = "SELECT lots.name AS name, 
+    categories.name AS category, 
+    current_cost, image 
+    FROM lots JOIN categories ON categories.id = category_id
+    ORDER BY lots.created_at DESC";
+    
+    $categoriesSql = "SELECT name, symbol_code FROM categories ORDER BY id";
+
+    $lots = getMysqlSelectionResult($con, $lotsSql);
+    $categories = getMysqlSelectionResult($con, $categoriesSql);
+}
+
+array_walk_recursive($lots, function (&$value, $key) {
+    $value = strip_tags($value);
+});
+
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
+
 $tommorow = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
-$remainingTime = $tommorow - $now;
-$remainingHours = floor($remainingTime / SECONDS_IN_HOUR);
-$remainingMinutes = floor(($remainingTime % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE);
-$format = "%02d:%02d";
-$formattedRemainingTime = sprintf($format, $remainingHours, $remainingMinutes);
+$remainingTime = getRemainingTime($tommorow);
 
 $getFormattedPrice = function ($price, $currency = '₽') {
     $intPrice = (int) $price;
@@ -25,48 +45,11 @@ $getFormattedPrice = function ($price, $currency = '₽') {
 $isAuth = rand(0, 1);
 $userName = 'Майя';
 
-$categories = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
-
-array_walk($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-
-$goods = [ ['name' => '2014 Rossignol District Snowboard',
-            'category' => 'Доски и лыжи',
-            'price' => '10999',
-            'imageUrl' => 'img/lot-1.jpg'],
-           ['name' => 'DC Ply Mens 2016/2017 Snowboard',
-           'category' => 'Доски и лыжи',
-           'price' => '159999',
-           'imageUrl' => 'img/lot-2.jpg'],
-           ['name' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-           'category' => 'Крепления',
-           'price' => '8000',
-           'imageUrl' => 'img/lot-3.jpg'],
-           ['name' => 'Ботинки для сноуборда DC Mutiny Charocal',
-           'category' => 'Ботинки',
-           'price' => '10999',
-           'imageUrl' => 'img/lot-4.jpg'],
-           ['name' => 'Куртка для сноуборда DC Mutiny Charocal',
-           'category' => 'Одежда',
-           'price' => '7500',
-           'imageUrl' => 'img/lot-5.jpg'],
-           ['name' => 'Маска Oakley Canopy',
-           'category' => 'Разное',
-           'price' => '5400',
-           'imageUrl' => 'img/lot-6.jpg']
-];
-
-array_walk_recursive($goods, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-
 $contentAdress = 'index.php';
 $contentValues = [ 'categories' => $categories,
-                   'goods' => $goods,
+                   'lots' => $lots,
                    'getFormattedPrice' => $getFormattedPrice,
-                   'remainingHours' => $remainingHours,
-                   'formattedRemainingTime' => $formattedRemainingTime
+                   'remainingTime' => $remainingTime
                   ];
 
 $pageContent = include_template($contentAdress, $contentValues);

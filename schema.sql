@@ -14,6 +14,8 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE users ENGINE = MyISAM;
+
 CREATE TABLE categories (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(30),
@@ -33,8 +35,10 @@ CREATE TABLE lots (
   winner_id    INT REFERENCES users (id),
   category_id  INT REFERENCES categories (id),
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  end_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  end_at       TIMESTAMP
 );
+
+ALTER TABLE lots ENGINE = MyISAM;
 
 CREATE TABLE rates (
   id         INT AUTO_INCREMENT PRIMARY KEY,
