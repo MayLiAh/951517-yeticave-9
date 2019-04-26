@@ -1,6 +1,7 @@
 <?php
 
 require_once 'helpers.php';
+require_once 'functions.php';
 
 $con = mysqli_connect("localhost", "mayliah", "", "951517_yeticave_9");
 
@@ -9,28 +10,16 @@ if ($con == false) {
 } else {
     mysqli_set_charset($con, "utf8");
 
-    $lotsSql = "SELECT lots.name AS name, categories.name AS category, current_cost, image 
+    $lotsSql = "SELECT lots.name AS name, 
+    categories.name AS category, 
+    current_cost, image 
     FROM lots JOIN categories ON categories.id = category_id
     ORDER BY lots.created_at DESC";
     
     $categoriesSql = "SELECT name, symbol_code FROM categories ORDER BY id";
 
-    $lotsResult = mysqli_query($con, $lotsSql);
-    $categoriesResult = mysqli_query($con, $categoriesSql);
-
-    if (!$lotsResult) {
-        $error = mysqli_error($con);
-        print("Ошибка MySQL: " . $error);
-    } else {
-        $lots = mysqli_fetch_all($lotsResult, MYSQLI_ASSOC);
-    }
-
-    if (!$categoriesResult) {
-        $error = mysqli_error($con);
-        print("Ошибка MySQL: " . $error);
-    } else {
-        $categories = mysqli_fetch_all($categoriesResult, MYSQLI_ASSOC);
-    }
+    $lots = getMysqlSelectionResult($con, $lotsSql);
+    $categories = getMysqlSelectionResult($con, $categoriesSql);
 }
 
 array_walk_recursive($lots, function (&$value, $key) {
@@ -41,17 +30,8 @@ array_walk_recursive($categories, function (&$value, $key) {
     $value = strip_tags($value);
 });
 
-
-const SECONDS_IN_MINUTE = 60;
-const SECONDS_IN_HOUR = 3600;
-
-$now = time();
 $tommorow = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
-$remainingTime = $tommorow - $now;
-$remainingHours = floor($remainingTime / SECONDS_IN_HOUR);
-$remainingMinutes = floor(($remainingTime % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE);
-$format = "%02d:%02d";
-$formattedRemainingTime = sprintf($format, $remainingHours, $remainingMinutes);
+$remainingTime = getRemainingTime($tommorow);
 
 $getFormattedPrice = function ($price, $currency = '₽') {
     $intPrice = (int) $price;
@@ -69,8 +49,7 @@ $contentAdress = 'index.php';
 $contentValues = [ 'categories' => $categories,
                    'lots' => $lots,
                    'getFormattedPrice' => $getFormattedPrice,
-                   'remainingHours' => $remainingHours,
-                   'formattedRemainingTime' => $formattedRemainingTime
+                   'remainingTime' => $remainingTime
                   ];
 
 $pageContent = include_template($contentAdress, $contentValues);

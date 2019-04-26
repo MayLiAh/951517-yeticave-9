@@ -27,9 +27,9 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?=$getFormattedPrice($lot['current_cost']); ?></span>
                         </div>
-                        <?php $timerClass = $remainingHours <= 1 ? 'timer--finishing' : ''; ?>
+                        <?php $timerClass = $remainingTime['remaining_hours'] <= 1 ? 'timer--finishing' : ''; ?>
                             <div class="lot__timer timer <?=$timerClass; ?>">
-                                <?=$formattedRemainingTime; ?>
+                                <?=$remainingTime['remaining_time']; ?>
                             </div>
                     </div>
                 </div>
