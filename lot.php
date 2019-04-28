@@ -3,6 +3,13 @@
 require_once 'helpers.php';
 require_once 'functions.php';
 
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+} else {
+    http_response_code(404);
+    header("Location: pages/404.html");
+}
+
 $con = mysqli_connect("localhost", "mayliah", "", "951517_yeticave_9");
 
 if ($con == false) {
@@ -10,19 +17,29 @@ if ($con == false) {
 } else {
     mysqli_set_charset($con, "utf8");
 
+    $lotsIdsSql = "SELECT id FROM lots";
+    $ids = getMysqlSelectionResult($con, $lotsIdsSql);
+
+    if (!isInArray($ids, $id)) {
+        http_response_code(404);
+        header("Location: pages/404.html");
+    }
+
     $lotsSql = "SELECT lots.name AS name, 
-    lots.id AS id, categories.name AS category, 
-    current_cost, image, end_at 
-    FROM lots JOIN categories ON categories.id = category_id
+    categories.name AS category,
+    about, current_cost,
+    rate_step, image, end_at 
+    FROM lots JOIN categories ON categories.id = category_id 
+    WHERE lots.id = $id
     ORDER BY lots.created_at DESC";
     
-    $categoriesSql = "SELECT name, symbol_code FROM categories ORDER BY id";
+    $categoriesSql = "SELECT name FROM categories ORDER BY id";
 
-    $lots = getMysqlSelectionResult($con, $lotsSql);
+    $lot = getMysqlSelectionAssocResult($con, $lotsSql);
     $categories = getMysqlSelectionResult($con, $categoriesSql);
 }
 
-array_walk_recursive($lots, function (&$value, $key) {
+array_walk_recursive($lot, function (&$value, $key) {
     $value = strip_tags($value);
 });
 
@@ -30,21 +47,16 @@ array_walk_recursive($categories, function (&$value, $key) {
     $value = strip_tags($value);
 });
 
-$isAuth = rand(0, 1);
-$userName = 'Майя';
-
-$contentAdress = 'index.php';
+$contentAdress = 'lot.php';
 $contentValues = [ 'categories' => $categories,
-                   'lots' => $lots
+                   'lot' => $lot
                   ];
 
 $pageContent = include_template($contentAdress, $contentValues);
 
 $layoutAdress = 'layout.php';
 $layoutValues = [
-                 'title' => 'Главная',
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
+                 'title' => $lot['name'],
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];
