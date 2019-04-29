@@ -4,8 +4,6 @@ require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-mysqli_set_charset($con, "utf8");
-
 $lotsSql = "SELECT lots.name AS name, 
 lots.id AS id, categories.name AS category, 
 current_cost, image, end_at 

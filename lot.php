@@ -11,8 +11,6 @@ if (isset($_GET['id'])) {
     header("Location: pages/404.html");
 }
 
-mysqli_set_charset($con, "utf8");
-
 $lotsIdsSql = "SELECT id FROM lots";
 $ids = getMysqlSelectionResult($con, $lotsIdsSql);
 
