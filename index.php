@@ -17,9 +17,6 @@ $categories = getMysqlSelectionResult($con, $categoriesSql);
 
 tagsTransforming('strip_tags', $lots, $categories);
 
-$isAuth = rand(0, 1);
-$userName = 'Майя';
-
 $contentAdress = 'index.php';
 $contentValues = [ 'categories' => $categories,
                    'lots' => $lots

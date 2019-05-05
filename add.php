@@ -4,14 +4,27 @@ require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
+$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
+$categories = getMysqlSelectionResult($con, $categoriesSql);
+tagsTransforming('strip_tags', $categories);
+
+$contentAdress = 'add.php';
+$contentValues = [ 'categories' => $categories,
+                   'lotName' => '',
+                   'categoryId' => '',
+                   'message' => '',
+                   'cost' => '',
+                   'step' => '',
+                   'date' => '',
+                   'errors' => []
+                 ];
+
 if (isset($_POST['submit'])) {
     $tommorow = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
     $errors = [];
     foreach ($_POST as $key => $value) {
         if (empty($value) && $key !== 'submit') {
             $errors[$key] = 'Поле должно быть заполнено!';
-        } elseif ($key === 'category' && $value === 'Выберите категорию') {
-            $errors[$key] = 'Выберите категорию';
         } elseif (($key === 'lot-rate' || $key === 'lot-step') && ($value <= 0 || floor($value) != $value)) {
             $errors[$key] = 'Введите корректную цену';
         } elseif ($key === 'lot-date' && (!is_date_valid($value) || strtotime($value) < $tommorow)) {
@@ -38,14 +51,23 @@ if (isset($_POST['submit'])) {
     $message = $_POST['message'];
     $cost = $_POST['lot-rate'];
     $step = $_POST['lot-step'];
-    $category = $_POST['category'];
+    $categoryId = $_POST['category'];
     $date = $_POST['lot-date'];
-    $img = $_POST['lot-img'];
+
+    if (!isInArray($categories, $categoryId)) {
+        $errors['category'] = 'Выберите категорию';
+    }
+
+    $contentValues['lotName'] = $name;
+    $contentValues['message'] = $message;
+    $contentValues['cost'] = $cost;
+    $contentValues['step'] = $step;
+    $contentValues['date'] = $date;
+    $contentValues['categoryId'] = $categoryId;
+    $contentValues['errors'] = $errors;
 
     if (empty($errors)) {
-        $categorySql = "SELECT id FROM categories WHERE name = '$category'";
-        $categoryId = getMysqlSelectionAssocResult($con, $categorySql)['id'];
-        $data = [$name, $message, $fileUrl, $cost, $step, $cost, 1, $categoryId, $date];
+        $data = [$name, $message, $fileUrl, $cost, $step, $cost, $userId, $categoryId, $date];
         $sql = "INSERT INTO lots 
                 (name, about, image, start_cost, rate_step, current_cost, user_id, category_id, end_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -55,27 +77,13 @@ if (isset($_POST['submit'])) {
     }
 }
 
-$categoriesSql = "SELECT name FROM categories ORDER BY id";
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-
-tagsTransforming('strip_tags', $categories);
-
-$contentAdress = 'add.php';
-$contentValues = [ 'categories' => $categories,
-                   'lotName' => $name,
-                   'message' => $message,
-                   'cost' => $cost,
-                   'step' => $step,
-                   'img' => $img,
-                   'date' => $date,
-                   'errors' => $errors
-                 ];
-
 $pageContent = include_template($contentAdress, $contentValues);
 
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => 'Добавление лота',
+                 'isAuth' => $isAuth,
+                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];
