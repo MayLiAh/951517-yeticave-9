@@ -6,3 +6,7 @@ if ($con == false) {
 }
 
 mysqli_set_charset($con, "utf8");
+
+$isAuth = rand(0, 1);
+$userName = 'Майя';
+$userId = 1;

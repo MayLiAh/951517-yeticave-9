@@ -44,6 +44,8 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => $lot['name'],
+                 'isAuth' => $isAuth,
+                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

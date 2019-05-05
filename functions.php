@@ -22,6 +22,27 @@ function getRemainingTime(string $end) : array
 }
 
 /**
+ * Производит отправку данных в БД
+ *
+ * @param mysqli $con  ресурс соединения с базой данных
+ * @param string $sql  запрос в базу данных
+ * @param array $data  значения для подстановки в подготовленный запрос
+ * 
+ * @return int id добавленной или измененной строки
+ */
+function insertDataMysql(mysqli $con, string $sql, array $data)
+{
+    $stmt = db_get_prepare_stmt($con, $sql, $data);
+    $result = mysqli_stmt_execute($stmt);
+
+    if ($result) {
+        $result = mysqli_insert_id($con);
+    }
+
+    return $result;
+}
+
+/**
  * Создает двумерный массив с полученными из базы данных значениями
  *
  * @param mysqli $con ресурс соединения с базой данных
