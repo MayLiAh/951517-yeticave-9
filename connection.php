@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 $con = mysqli_connect("localhost", "mayliah", "", "951517_yeticave_9");
 
 if ($con == false) {
@@ -6,7 +9,3 @@ if ($con == false) {
 }
 
 mysqli_set_charset($con, "utf8");
-
-$isAuth = rand(0, 1);
-$userName = 'Майя';
-$userId = 1;

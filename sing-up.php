@@ -50,7 +50,7 @@ if (isset($_POST['submit'])) {
                 VALUES (?, ?, ?, ?)";
 
         $newUser = insertDataMysql($con, $sql, $data);
-        header("Location: pages/login.html");
+        header("Location: login.php");
     }
 }
 
