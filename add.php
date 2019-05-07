@@ -4,6 +4,11 @@ require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
+if (!isset($_SESSION['user_name'])) {
+    http_response_code(403);
+    header("Location: index.php");
+}
+
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
 tagsTransforming('strip_tags', $categories);
@@ -53,6 +58,7 @@ if (isset($_POST['submit'])) {
     $step = $_POST['lot-step'];
     $categoryId = $_POST['category'];
     $date = $_POST['lot-date'];
+    $userId = $_SESSION['user_id'];
 
     if (!isInArray($categories, $categoryId)) {
         $errors['category'] = 'Выберите категорию';

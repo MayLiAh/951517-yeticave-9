@@ -1,5 +1,4 @@
 <?php
-
 require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
@@ -27,8 +26,6 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => 'Главная',
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];
