@@ -19,6 +19,8 @@ $contentValues = [ 'categories' => $categories,
                    'errors' => []
                  ];
 
+$passwordReg = '/^[0-9A-Za-z]^/';
+
 if (isset($_POST['submit'])) {
     $errors = [];
     foreach ($_POST as $key => $value) {
@@ -30,6 +32,8 @@ if (isset($_POST['submit'])) {
             $errors[$key] = 'Введите корректный e-mail';
         } elseif ($key === 'password' && strlen($value) < 6) {
             $errors[$key] = 'Пароль не должен быть короче 6 символов';
+        } elseif ($key === 'password' && !preg_match($passwordReg, $value)) {
+            $errors[$key] = 'Пароль может содержать только цифры и латинские буквы';
         }
     }
 

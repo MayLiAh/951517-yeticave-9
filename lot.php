@@ -5,7 +5,7 @@ require_once 'helpers.php';
 require_once 'functions.php';
 
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $lotId = $_GET['id'];
 } else {
     http_response_code(404);
     header("Location: pages/404.html");
@@ -14,30 +14,91 @@ if (isset($_GET['id'])) {
 $lotsIdsSql = "SELECT id FROM lots";
 $ids = getMysqlSelectionResult($con, $lotsIdsSql);
 
-if (!isInArray($ids, $id)) {
+if (!isInArray($ids, $lotId)) {
     http_response_code(404);
     header("Location: pages/404.html");
 }
 
-$lotsSql = "SELECT lots.name AS name, 
-categories.name AS category,
-about, current_cost,
-rate_step, image, end_at 
-FROM lots JOIN categories ON categories.id = category_id 
-WHERE lots.id = $id
-ORDER BY lots.created_at DESC";
+$lotSql = "SELECT l.name AS name, user_id,
+            c.name AS category, about, current_cost,
+            rate_step, image, end_at 
+            FROM lots AS l JOIN categories AS c
+            ON c.id = category_id 
+            WHERE l.id = $lotId";
     
 $categoriesSql = "SELECT name FROM categories ORDER BY id";
 
-$lot = getMysqlSelectionAssocResult($con, $lotsSql);
-$categories = getMysqlSelectionResult($con, $categoriesSql);
+$ratesSql = "SELECT user_id, r.cost, u.full_name AS user_name, 
+             r.created_at AS rate_time 
+             FROM rates AS r JOIN users AS u
+             ON u.id = user_id
+             WHERE r.lot_id = $lotId
+             ORDER BY r.created_at DESC";
 
-tagsTransforming('strip_tags', $lot, $categories);
+$lot = getMysqlSelectionAssocResult($con, $lotSql);
+$categories = getMysqlSelectionResult($con, $categoriesSql);
+$rates = getMysqlSelectionResult($con, $ratesSql);
+tagsTransforming('strip_tags', $lot, $categories, $rates);
+
+$ratesCount = empty($rates) ? 0 : count($rates);
+$showRate = true;
+
+if (!isset($_SESSION['user_id'])) {
+    $showRate = false;
+} else {
+    $userId = $_SESSION['user_id'];
+    if ($lot['user_id'] === $userId) {
+        $showRate = false;
+    } elseif (isset($rates[0]['user_id'])) {
+        $lastRateUserId = $rates[0]['user_id'];
+        $showRate = $lastRateUserId === $userId ? false : true;
+    } elseif (strtotime($lot['end_at']) < time()) {
+        $showRate = false;
+    }
+}
+
+$minRate = $lot['current_cost'] + $lot['rate_step'];
 
 $contentAdress = 'lot.php';
 $contentValues = [ 'categories' => $categories,
-                   'lot' => $lot
-                  ];
+                   'lot' => $lot,
+                   'lotId' => $lotId,
+                   'minRate' => $minRate,
+                   'rates' => $rates,
+                   'ratesCount' => $ratesCount,
+                   'showRate' => $showRate,
+                   'cost' => '',
+                   'success' => '',
+                   'errors' => []
+                 ];
+
+if (isset($_POST['submit']) && $showRate) {
+    $errors = [];
+    $cost = (int) $_POST['cost'];
+
+    if (empty($cost)) {
+        $errors['cost'] = 'Поле должно быть заполнено!';
+    } elseif ($cost < $minRate || $cost != round($cost)) {
+        $errors['cost'] = 'Введите корректную цену!';
+    }
+
+    $contentValues['cost'] = $cost;
+    $contentValues['errors'] = $errors;
+
+    if (empty($errors)) {
+        $userId = $_SESSION['user_id'];
+        $rateData = [$cost, $userId, $lotId];
+        $rateSql = "INSERT INTO rates 
+                (cost, user_id, lot_id)
+                VALUES (?, ?, ?)";
+        $lotData = [$cost, $lotId];
+        $lotSql = "UPDATE lots SET current_cost = ? WHERE id = ?";
+        $newRate = insertDataMysql($con, $rateSql, $rateData);
+        $updatedLot = insertDataMysql($con, $lotSql, $lotData);
+
+        $contentValues['success'] = 'Ставка успешно добавлена';
+    }
+}
 
 $pageContent = include_template($contentAdress, $contentValues);
 
