@@ -2,7 +2,7 @@
 /**
  * Создает массив с оставшимися до конца торгов часами и отформатированным временем
  *
- * @param string $end Дата окончания торгов в виде числа (метки системного времени Unix)
+ * @param string $end Дата окончания торгов в строки
  *
  * @return array созданный массив
  */
@@ -19,6 +19,40 @@ function getRemainingTime(string $end) : array
     $formattedRemainingTime = sprintf($format, $remainingHours, $remainingMinutes);
 
     return ['remaining_hours' => $remainingHours, 'remaining_time' => $formattedRemainingTime];
+}
+
+/**
+ * Создает строку с прошедшим с момента ставки временем
+ *
+ * @param string $date Дата создания ставки в виде строки
+ *
+ * @return string созданная строка
+ */
+function getElapsedTime(string $date) : string
+{
+    $dateToTime = strtotime($date);
+    $secondsInMinute = 60;
+    $secondsInHour = 3600;
+
+    $elapsedSeconds = time() - $dateToTime;
+    $elapsedHours = floor($elapsedSeconds / $secondsInHour);
+    $elapsedMinutes = floor(($elapsedSeconds % $secondsInHour) / $secondsInMinute);
+
+    if ($elapsedHours < 1) {
+        $timeWord = get_noun_plural_form($elapsedMinutes, 'минута', 'минуты', 'минут');
+        return "$elapsedMinutes $timeWord назад";
+    }
+    if ($elapsedHours > 0 && $elapsedHours < 24) {
+        $timeWord = get_noun_plural_form($elapsedHours, 'час', 'часа', 'часов');
+        return "$elapsedHours $timeWord назад";
+    }
+    if ($elapsedHours >=24 && $elapsedHours < 48) {
+        $time = substr($date, -8, -3);
+        return "Вчера, в $time";
+    }
+    if ($elapsedHours >= 48) {
+        return date('d.m.y \в h:i', $dateToTime);
+    }
 }
 
 /**

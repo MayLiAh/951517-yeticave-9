@@ -34,15 +34,35 @@
                 Мин. ставка <span><?=getFormattedPrice($lot['current_cost'] + $lot['rate_step']); ?></span>
               </div>
             </div>
-            <?php if (isset($_SESSION['user_name'])) : ?>
-            <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post" autocomplete="off">
-              <p class="lot-item__form-item form__item form__item--invalid">
+            <?php if (isset($_SESSION['user_name']) && $showRate) : ?>
+            <?php $formClass = empty($errors) ? '' : 'form--invalid'; ?>
+            <form class="lot-item__form <?=$formClass; ?>" action="lot.php?id=<?=$lotId; ?>" method="post" autocomplete="off">
+            <?php 
+            $costClass = isset($errors['cost']) ? 'form__item--invalid' : '';
+            $costError = isset($errors['cost']) ? $errors['cost'] : '';
+            ?>
+              <p class="lot-item__form-item form__item <?=$costClass; ?>">
                 <label for="cost">Ваша ставка</label>
-                <input id="cost" type="text" name="cost" placeholder="12 000">
-                <span class="form__error">Введите наименование лота</span>
+                <input id="cost" type="text" name="cost" placeholder="<?=$minRate; ?>" value="<?=$cost; ?>">
+                <span class="form__error"><?=$costError; ?></span>
+                <span><?=$success; ?></span>
               </p>
-              <button type="submit" class="button">Сделать ставку</button>
+              <button type="submit" class="button" name="submit">Сделать ставку</button>
             </form>
+            <?php endif; ?>
+          </div>
+          <div class="history">
+            <h3>История ставок (<span><?=$ratesCount; ?></span>)</h3>
+            <?php if (!empty($rates)) : ?>
+            <table class="history__list">
+                <?php foreach ($rates as $rate) : ?>
+              <tr class="history__item">
+                <td class="history__name"><?=$rate['user_name']; ?></td>
+                <td class="history__price"><?=getFormattedPrice($rate['cost']); ?></td>
+                <td class="history__time"><?=getElapsedTime($rate['rate_time']); ?></td>
+              </tr>
+                <?php endforeach; ?>
+            </table>
             <?php endif; ?>
           </div>
         </div>

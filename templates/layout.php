@@ -26,7 +26,7 @@
         <?php if (isset($_SESSION['user_name'])) : ?>
             <div class="user-menu__logged">
                 <p><?=$_SESSION['user_name']; ?></p>
-                <a class="user-menu__bets" href="pages/my-bets.html">Мои ставки</a>
+                <a class="user-menu__bets" href="bets.php">Мои ставки</a>
                 <a class="user-menu__logout" href="logaut.php">Выход</a>
             </div>
         <?php else : ?>
