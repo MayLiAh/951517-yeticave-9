@@ -124,7 +124,7 @@ function getMysqlSelectionAssocResult(mysqli $con, string $sql) : array
  * 
  * @return string форматированная цена
  */
-function getFormattedPrice(int $price, string $currency = '₽') : string
+function getFormattedPrice(int $price, string $currency = '<b class="rub"></b>') : string
 {
     $roundPrice = ceil($price);
     $formattedPrice = $roundPrice < 1000 ? $roundPrice : number_format($roundPrice, 0, '.', ' ');
