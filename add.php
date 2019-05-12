@@ -37,6 +37,9 @@ if (isset($_POST['submit'])) {
         }
     }
 
+    $fileName = isset($_FILES['lot-img']['name']) ? $_FILES['lot-img']['name'] : '';
+    $fileUrl = !empty($fileName) ? "uploads/$fileName" : '';
+
     if (isset($_FILES['lot-img']) && !empty($_FILES['lot-img']['name'])) {
         $fileType = mime_content_type($_FILES['lot-img']['tmp_name']);
         if ($fileType !== 'image/png' && $fileType !== 'image/jpeg') {
@@ -44,9 +47,7 @@ if (isset($_POST['submit'])) {
         }
 
         if (empty($errors)) {
-            $fileName = $_FILES['lot-img']['name'];
             $filePath = __DIR__ . '/uploads/';
-            $fileUrl = 'uploads/' . $fileName;
 
             move_uploaded_file($_FILES['lot-img']['tmp_name'], $filePath . $fileName);
         }
@@ -72,7 +73,7 @@ if (isset($_POST['submit'])) {
     $contentValues['categoryId'] = $categoryId;
     $contentValues['errors'] = $errors;
 
-    if (empty($errors)) {
+    if (empty($errors) && !empty($fileUrl)) {
         $data = [$name, $message, $fileUrl, $cost, $step, $cost, $userId, $categoryId, $date];
         $sql = "INSERT INTO lots 
                 (name, about, image, start_cost, rate_step, current_cost, user_id, category_id, end_at)
@@ -88,8 +89,6 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => 'Добавление лота',
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

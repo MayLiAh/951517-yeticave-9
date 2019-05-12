@@ -27,7 +27,7 @@ if (isset($_POST['submit'])) {
         }
     }
 
-    $email = $_POST['email'];
+    $email = mysqli_real_escape_string($con, $_POST['email']);
 
     if (empty($errors)) {
         $password = $_POST['password'];

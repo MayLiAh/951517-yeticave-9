@@ -14,6 +14,8 @@ if (isset($_GET['search'])) {
     $search = trim($_GET['search']);
 }
 
+$search = mysqli_real_escape_string($con, $search);
+
 $contentAdress = 'search.php';
 $contentValues = [ 'categories' => $categories,
                    'search' => $search,
@@ -32,7 +34,7 @@ if (!empty($search)) {
     $lots = getMysqlSelectionResult($con, $lotsSql);
     $newLots = [];
     foreach ($lots as $lot) {
-        $lotId = $lot['id'];
+        $lotId = mysqli_real_escape_string($con, $lot['id']);
         $countSql = "SELECT * FROM rates
                      WHERE lot_id = $lotId";
         $count = count(getMysqlSelectionResult($con, $countSql));

@@ -18,7 +18,7 @@ $categories = getMysqlSelectionResult($con, $categoriesSql);
 
 $newLots = [];
 foreach ($lots as $lot) {
-    $lotId = $lot['id'];
+    $lotId = mysqli_real_escape_string($con, $lot['id']);
     $countSql = "SELECT * FROM rates
                  WHERE lot_id = $lotId";
     $count = count(getMysqlSelectionResult($con, $countSql));
@@ -31,7 +31,7 @@ foreach ($lots as $lot) {
     $newLots[] = $lot;
 }
 
-tagsTransforming('strip_tags', $lots, $categories);
+tagsTransforming('strip_tags', $newLots, $categories);
 
 $contentAdress = 'index.php';
 $contentValues = [ 'categories' => $categories,

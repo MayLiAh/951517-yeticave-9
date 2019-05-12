@@ -4,12 +4,15 @@ require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
+$lotId = '';
 if (isset($_GET['id'])) {
-    $lotId = $_GET['id'];
+   $lotId = mysqli_real_escape_string($con, $_GET['id']);
 } else {
     http_response_code(404);
     header("Location: pages/404.html");
 }
+
+
 
 $lotsIdsSql = "SELECT id FROM lots";
 $ids = getMysqlSelectionResult($con, $lotsIdsSql);
@@ -105,8 +108,6 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => $lot['name'],
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

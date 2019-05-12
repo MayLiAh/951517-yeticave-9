@@ -63,8 +63,6 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => 'Регистрация',
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

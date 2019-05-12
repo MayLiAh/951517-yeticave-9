@@ -13,20 +13,19 @@
       <table class="rates__list">
         <?php if (!empty($rates)) : ?>
         <?php foreach ($rates as $rate) : ?>
-        <tr class="rates__item">
+        <tr class="rates__item <?=$rate['rate_class']; ?>">
           <td class="rates__info">
             <div class="rates__img">
               <img src="<?=$rate['lot_img']; ?>" width="54" height="40" alt="<?=$rate['lot_name']; ?>">
             </div>
             <h3 class="rates__title"><a href="lot.php?id=<?=$rate['lot_id']; ?>"><?=$rate['lot_name']; ?></a></h3>
+            <p><?=$rate['user_contacts']; ?></p>
           </td>
           <td class="rates__category">
             <?=$rate['category_name']; ?>
           </td>
-            <?php $remainingTime = getRemainingTime($rate['lot_end']); ?>
-            <?php $timerClass = $remainingTime['remaining_hours'] <= 1 ? 'timer--finishing' : ''; ?>
           <td class="rates__timer">
-            <div class="timer <?=$timerClass; ?>"><?=$remainingTime['remaining_time']; ?></div>
+            <div class="timer <?=$rate['timer_class']; ?>"><?=$rate['timer_status']; ?></div>
           </td>
           <td class="rates__price">
             <?=getFormattedPrice($rate['cost']); ?>
