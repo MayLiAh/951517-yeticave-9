@@ -152,25 +152,3 @@ function isInArray(array $array, $value) : bool
     }
     return false;
 }
-/**
- * Преобразует переданный массив или массивы согласно заданому параметру
- *
- * @param string $method способ преобразования, возможно использование функций
- * strip_tags и htmlspecialchars с параметрами по умолчанию.
- * Если $method !== 'htmlspecialchars', будет применена функция strip_tags
- * @param array  $arrays массив или массивы, в которых нужно удалить или преобразовать теги
- * 
- * @return bool true - если преобразование прошло успешно, иначе false
- */
-function tagsTransforming(string $method, array ...$arrays)
-{
-    if ($method === 'htmlspecialchars') {
-        return array_walk_recursive($arrays, function (&$value, $key) {
-            $value = htmlspecialchars($value);
-        });
-    }
-
-    return array_walk_recursive($arrays, function (&$value, $key) {
-        $value = strip_tags($value);
-    });
-}

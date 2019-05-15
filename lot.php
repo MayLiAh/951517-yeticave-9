@@ -6,7 +6,7 @@ require_once 'functions.php';
 
 $lotId = '';
 if (isset($_GET['id'])) {
-   $lotId = mysqli_real_escape_string($con, $_GET['id']);
+    $lotId = mysqli_real_escape_string($con, $_GET['id']);
 } else {
     http_response_code(404);
     header("Location: pages/404.html");
@@ -29,7 +29,7 @@ $lotSql = "SELECT l.name AS name, user_id,
             ON c.id = category_id 
             WHERE l.id = $lotId";
     
-$categoriesSql = "SELECT name FROM categories ORDER BY id";
+$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 
 $ratesSql = "SELECT user_id, r.cost, u.full_name AS user_name, 
              r.created_at AS rate_time 
@@ -41,7 +41,15 @@ $ratesSql = "SELECT user_id, r.cost, u.full_name AS user_name,
 $lot = getMysqlSelectionAssocResult($con, $lotSql);
 $categories = getMysqlSelectionResult($con, $categoriesSql);
 $rates = getMysqlSelectionResult($con, $ratesSql);
-tagsTransforming('strip_tags', $lot, $categories, $rates);
+array_walk_recursive($lot, function (&$value, $key) {
+    $value = strip_tags($value);
+});
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
+array_walk_recursive($rates, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $ratesCount = empty($rates) ? 0 : count($rates);
 $showRate = true;

@@ -4,9 +4,11 @@ require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-$categoriesSql = "SELECT name, symbol_code FROM categories ORDER BY id";
+$categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-tagsTransforming('strip_tags', $categories);
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $search = '';
 
@@ -30,6 +32,7 @@ if (!empty($search)) {
                 ON c.id = category_id
                 WHERE MATCH(l.name, l.about) AGAINST('$search')
                 AND l.end_at > CURDATE()
+                AND winner_id IS NULL
                 ORDER BY l.created_at DESC";
     $lots = getMysqlSelectionResult($con, $lotsSql);
     $newLots = [];
@@ -46,7 +49,9 @@ if (!empty($search)) {
         $lot['cost_type'] = $costType;
         $newLots[] = $lot;
     }
-    tagsTransforming('strip_tags', $newLots);
+    array_walk_recursive($newLots, function (&$value, $key) {
+        $value = strip_tags($value);
+    });
     $contentValues['lots'] = $newLots;
 }
 

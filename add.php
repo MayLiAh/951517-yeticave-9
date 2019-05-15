@@ -11,7 +11,9 @@ if (!isset($_SESSION['user_name'])) {
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-tagsTransforming('strip_tags', $categories);
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $contentAdress = 'add.php';
 $contentValues = [ 'categories' => $categories,
@@ -51,6 +53,8 @@ if (isset($_POST['submit'])) {
 
             move_uploaded_file($_FILES['lot-img']['tmp_name'], $filePath . $fileName);
         }
+    } else {
+        $errors['lot-img'] = 'Изображение обязательно к добавлению!';
     }
 
     $name = $_POST['lot-name'];

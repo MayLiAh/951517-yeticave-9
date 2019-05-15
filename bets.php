@@ -9,13 +9,18 @@ if (!isset($_SESSION['user_name'])) {
     header("Location: index.php");
 }
 
+echo $_SESSION['user_id'];
 $userId = mysqli_real_escape_string($con, $_SESSION['user_id']);
 $rates = [];
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
-$lotsIdsSql = "SELECT lot_id FROM rates WHERE user_id = $userId";
+$lotsIdsSql = "SELECT lot_id FROM rates WHERE user_id = $userId
+               ORDER BY created_at DESC";
 $lotsIds = getMysqlSelectionResult($con, $lotsIdsSql);
 
 if (!empty($lotsIds)) {
@@ -25,8 +30,7 @@ if (!empty($lotsIds)) {
                    l.winner_id AS winner_id, c.name AS category_name, r.cost AS cost, r.created_at AS rate_time
                    FROM lots AS l JOIN categories AS c ON c.id = l.category_id 
                    JOIN rates AS r ON r.lot_id = l.id
-                   WHERE l.id = $id 
-                   ORDER BY r.created_at DESC";
+                   WHERE r.user_id = $userId AND l.id = $id";
         $rate = getMysqlSelectionAssocResult($con, $rateSql);
         $modifiedRate = $rate;
         $modifiedRate['rate_class'] = '';
@@ -65,7 +69,9 @@ if (!empty($lotsIds)) {
     }
 }
 
-tagsTransforming('strip_tags', $categories, $rates);
+array_walk_recursive($rates, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $contentAdress = 'bets.php';
 $contentValues = [ 'categories' => $categories,

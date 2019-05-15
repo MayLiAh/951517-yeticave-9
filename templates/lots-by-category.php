@@ -9,7 +9,7 @@
     </nav>
     <div class="container">
       <section class="lots">
-        <h2>Результаты поиска по запросу «<span><?=$search; ?></span>»</h2>
+        <h2>Все лоты в категории «<span><?=$categoryName; ?></span>»</h2>
         <?php if (!empty($lots)) : ?>
         <ul class="lots__list">
             <?php foreach ($lots as $lot) : ?>
@@ -36,7 +36,7 @@
             <?php endforeach; ?>
         </ul>
         <?php else : ?>
-        <span>По вашему запросу ничего не найдено</span>
+        <span>В этой категории нет активных лотов</span>
         <?php endif; ?>
       </section>
         <?php if (count($lots) > 9) : ?>

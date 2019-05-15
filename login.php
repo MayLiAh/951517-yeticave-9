@@ -9,7 +9,12 @@ $categories = getMysqlSelectionResult($con, $categoriesSql);
 
 $usersSql = "SELECT id, full_name, email, password FROM users";
 $users = getMysqlSelectionResult($con, $usersSql);
-tagsTransforming('strip_tags', $categories, $users);
+array_walk_recursive($users, function (&$value, $key) {
+    $value = strip_tags($value);
+});
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $contentAdress = 'login.php';
 $contentValues = [ 'categories' => $categories,
@@ -33,6 +38,9 @@ if (isset($_POST['submit'])) {
         $password = $_POST['password'];
         $userSql = "SELECT id, full_name, password FROM users WHERE email = '$email'";
         $user = getMysqlSelectionAssocResult($con, $userSql);
+        array_walk_recursive($user, function (&$value, $key) {
+            $value = strip_tags($value);
+        });
         $rightPassword = $user['password'];
 
         if (!password_verify($password, $rightPassword)) {

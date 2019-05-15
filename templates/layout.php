@@ -5,6 +5,7 @@
     <title><?=$pageTitle; ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/flatpickr.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="page-wrapper">
@@ -53,7 +54,7 @@
         <ul class="nav__list container">
             <?php foreach ($categories as $category) : ?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$category['name']; ?></a>
+                <a href="lots-by-category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
             </li>
             <?php endforeach; ?>
         </ul>
@@ -99,8 +100,7 @@
         </div>
     </div>
 </footer>
-
-<!--<script src="flatpickr.js"></script>
-<script src="script.js"></script>-->
+<script src="flatpickr.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -61,7 +61,7 @@ CREATE UNIQUE INDEX category_code ON categories(symbol_code);
 
 CREATE UNIQUE INDEX lot_id ON lots(id);
 CREATE FULLTEXT INDEX lot_name ON lots(name);
-CREATE FULLTEXT INDEX about_lot ON lots(about);
+CREATE FULLTEXT INDEX lot ON lots(name, about);
 CREATE INDEX lot_image ON lots(image);
 CREATE INDEX lot_start_cost ON lots(start_cost);
 CREATE INDEX lot_current_cost ON lots(start_cost);
