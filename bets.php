@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_name'])) {
     header("Location: index.php");
 }
 
-echo $_SESSION['user_id'];
 $userId = mysqli_real_escape_string($con, $_SESSION['user_id']);
 $rates = [];
 
