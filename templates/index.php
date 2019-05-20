@@ -38,3 +38,26 @@
             <?php endforeach; ?>
         </ul>
     </section>
+        <?php if (count($pages) > 1) : ?>
+      <ul class="pagination-list">
+        <?php 
+        $hrefBack = '';
+        if (isset($_GET['page']) && $_GET['page'] > 1) {
+            $pageBack = $_GET['page'] - 1;
+            $hrefBack = "href='index.php?page=$pageBack'";
+        } ?>
+        <li class="pagination-item pagination-item-prev"><a <?=$hrefBack; ?>>Назад</a></li>
+        <?php foreach ($pages as $page => $href) : ?>
+        <li class="pagination-item pagination-item-active"><a <?=$href; ?>><?=$page; ?></a></li>
+        <?php endforeach; ?>
+        <?php 
+        $hrefForward = '';
+        if (isset($_GET['page']) && array_key_exists($_GET['page'] + 1, $pages)) {
+            $pageForward = $_GET['page'] + 1;
+            $hrefForward = "href='index.php?page=$pageForward'";
+        } elseif (!isset($_GET['page'])) {
+            $hrefForward = "href='index.php?page=2'";
+        } ?>
+        <li class="pagination-item pagination-item-next"><a <?=$hrefForward; ?>>Вперед</a></li>
+      </ul>
+        <?php endif; ?>

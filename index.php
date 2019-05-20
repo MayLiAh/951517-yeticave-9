@@ -4,6 +4,15 @@ require_once 'helpers.php';
 require_once 'functions.php';
 require_once 'winners.php';
 
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+$limit = 9;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
+
+$allLotsSql = "SELECT id FROM lots WHERE end_at > CURDATE() AND winner_id IS NULL";
 $lotsSql = "SELECT l.name AS name, l.id AS id, 
             c.name AS category, 
             current_cost, image, end_at 
@@ -11,12 +20,20 @@ $lotsSql = "SELECT l.name AS name, l.id AS id,
             ON c.id = category_id
             WHERE l.end_at > CURDATE()
             AND winner_id IS NULL
-            ORDER BY l.created_at DESC";
-    
+            ORDER BY l.created_at DESC
+            LIMIT $limit OFFSET $offset";   
 $categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
 
 $lots = getMysqlSelectionResult($con, $lotsSql);
 $categories = getMysqlSelectionResult($con, $categoriesSql);
+$lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
+$pagesCount = ceil($lotsCount / $limit);
+
+$pages = [];
+
+for ($i = 1; $i <= $pagesCount; $i++) {
+    $pages[$i] = "href='index.php?page=$i'";
+}
 
 $newLots = [];
 foreach ($lots as $lot) {
@@ -42,7 +59,8 @@ array_walk_recursive($categories, function (&$value, $key) {
 
 $contentAdress = 'index.php';
 $contentValues = [ 'categories' => $categories,
-                   'lots' => $newLots
+                   'lots' => $newLots,
+                   'pages' => $pages
                   ];
 
 $pageContent = include_template($contentAdress, $contentValues);

@@ -18,10 +18,27 @@ if (isset($_GET['search'])) {
 
 $search = mysqli_real_escape_string($con, $search);
 
+$limit = 9;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
+
+$allLotsSql = "SELECT id FROM lots WHERE MATCH(name, about) AGAINST('$search')
+               AND end_at > CURDATE()
+               AND winner_id IS NULL";
+$lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
+$pagesCount = ceil($lotsCount / $limit);
+
+$pages = [];
+
+for ($i = 1; $i <= $pagesCount; $i++) {
+    $pages[$i] = "href='search.php?search=$search&page=$i'";
+}
+
 $contentAdress = 'search.php';
 $contentValues = [ 'categories' => $categories,
                    'search' => $search,
-                   'lots' => []
+                   'lots' => [],
+                   'pages' => $pages
                   ];
 
 if (!empty($search)) {
@@ -33,7 +50,8 @@ if (!empty($search)) {
                 WHERE MATCH(l.name, l.about) AGAINST('$search')
                 AND l.end_at > CURDATE()
                 AND winner_id IS NULL
-                ORDER BY l.created_at DESC";
+                ORDER BY l.created_at DESC
+                LIMIT $limit OFFSET $offset";
     $lots = getMysqlSelectionResult($con, $lotsSql);
     $newLots = [];
     foreach ($lots as $lot) {

@@ -8,7 +8,7 @@ $categoryId = '';
 if (isset($_GET['id'])) {
     $categoryId = mysqli_real_escape_string($con, $_GET['id']);
 } else {
-    http_response_code(404);
+   http_response_code(404);
     header("Location: pages/404.html");
 }
 
@@ -17,7 +17,23 @@ $ids = getMysqlSelectionResult($con, $categoriesIdsSql);
 
 if (!isInArray($ids, $categoryId)) {
     http_response_code(404);
-    header("Location: pages/404.html");
+    //header("Location: pages/404.html");
+}
+
+$limit = 9;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
+
+$allLotsSql = "SELECT id FROM lots WHERE end_at > CURDATE() 
+               AND winner_id IS NULL AND category_id = $categoryId";
+
+$lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
+$pagesCount = ceil($lotsCount / $limit);
+
+$pages = [];
+
+for ($i = 1; $i <= $pagesCount; $i++) {
+    $pages[$i] = "href='lots-by-category.php?id=$categoryId&page=$i'";
 }
 
 $categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
@@ -30,7 +46,8 @@ $lotsSql = "SELECT l.name AS name, l.id AS id,
             WHERE l.end_at > CURDATE()
             AND l.category_id = $categoryId
             AND winner_id IS NULL
-            ORDER BY l.created_at DESC";
+            ORDER BY l.created_at DESC
+            LIMIT $limit OFFSET $offset";
 
 $categories = getMysqlSelectionResult($con, $categoriesSql);
 $category = getMysqlSelectionAssocResult($con, $categorySql);
@@ -63,7 +80,8 @@ array_walk_recursive($category, function (&$value, $key) {
 $contentAdress = 'lots-by-category.php';
 $contentValues = [ 'categories' => $categories,
                    'categoryName' => $category['name'],
-                   'lots' => $newLots
+                   'lots' => $newLots,
+                   'pages' => $pages
                   ];
 
 $pageContent = include_template($contentAdress, $contentValues);
@@ -71,7 +89,8 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [ 'pageTitle' => $category['name'],
                   'categories' => $categories,
-                  'pageContent' => $pageContent
+                  'pageContent' => $pageContent,
+                  'categoryId' => $categoryId
                 ];
                   
 $pageLayout = include_template($layoutAdress, $layoutValues);

@@ -19,6 +19,7 @@ array_walk_recursive($categories, function (&$value, $key) {
 });
 
 $lotsIdsSql = "SELECT lot_id FROM rates WHERE user_id = $userId
+               GROUP BY lot_id
                ORDER BY created_at DESC";
 $lotsIds = getMysqlSelectionResult($con, $lotsIdsSql);
 
@@ -29,7 +30,11 @@ if (!empty($lotsIds)) {
                    l.winner_id AS winner_id, c.name AS category_name, r.cost AS cost, r.created_at AS rate_time
                    FROM lots AS l JOIN categories AS c ON c.id = l.category_id 
                    JOIN rates AS r ON r.lot_id = l.id
-                   WHERE r.user_id = $userId AND l.id = $id";
+                   WHERE r.user_id = $userId AND l.id = $id
+                   AND r.created_at = 
+                   (SELECT MAX(r.created_at) FROM rates AS r
+                   JOIN lots AS l ON lot_id = l.id
+                   WHERE r.user_id = $userId AND l.id = $id)";
         $rate = getMysqlSelectionAssocResult($con, $rateSql);
         $modifiedRate = $rate;
         $modifiedRate['rate_class'] = '';
