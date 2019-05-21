@@ -9,7 +9,6 @@ CREATE TABLE users (
   full_name  VARCHAR(50) NOT NULL,
   email      VARCHAR(50) NOT NULL UNIQUE,
   password   VARCHAR(60) NOT NULL,
-  avatar     VARCHAR(100),
   contacts   TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
