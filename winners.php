@@ -4,10 +4,6 @@ require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-
 $withoutWinnersSql = "SELECT id, name FROM lots WHERE winner_id IS NULL
                       AND end_at <= CURDATE()";
 $withoutWinners = getMysqlSelectionResult($con, $withoutWinnersSql);
@@ -49,5 +45,5 @@ foreach ($withoutWinners as $withoutWinner) {
         ->setBody($emailContent, 'text/html');
 
         $result = $mailer->send($message);
-    }   
+    }
 }

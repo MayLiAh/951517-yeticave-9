@@ -56,7 +56,6 @@ if (!empty($lotsIds)) {
                 $modifiedRate['timer_class'] = 'timer--end';
                 $modifiedRate['timer_status'] = 'Торги окончены';
             }
-            
         } elseif (strtotime($rate['lot_end']) < time()) {
             $modifiedRate['rate_class'] = 'rates__item--end';
             $modifiedRate['timer_class'] = 'timer--end';
@@ -64,7 +63,7 @@ if (!empty($lotsIds)) {
         } else {
             $remainingTime = getRemainingTime($rate['lot_end']);
             if ($remainingTime['remaining_hours'] <= 1) {
-                $modifiedRate['timer_class'] = 'timer--finishing'; 
+                $modifiedRate['timer_class'] = 'timer--finishing';
             }
             $modifiedRate['timer_status'] = $remainingTime['remaining_time'];
         }

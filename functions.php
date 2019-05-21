@@ -61,7 +61,7 @@ function getElapsedTime(string $date) : string
  * @param mysqli $con  ресурс соединения с базой данных
  * @param string $sql  запрос в базу данных
  * @param array $data  значения для подстановки в подготовленный запрос
- * 
+ *
  * @return int id добавленной или измененной строки
  */
 function insertDataMysql(mysqli $con, string $sql, array $data)
@@ -81,7 +81,7 @@ function insertDataMysql(mysqli $con, string $sql, array $data)
  *
  * @param mysqli $con ресурс соединения с базой данных
  * @param string $sql запрос в базу данных
- * 
+ *
  * @return array созданный массив
  */
 function getMysqlSelectionResult(mysqli $con, string $sql) : array
@@ -101,7 +101,7 @@ function getMysqlSelectionResult(mysqli $con, string $sql) : array
  *
  * @param mysqli $con ресурс соединения с базой данных
  * @param string $sql запрос в базу данных
- * 
+ *
  * @return array созданный массив
  */
 function getMysqlSelectionAssocResult(mysqli $con, string $sql) : array
@@ -121,7 +121,7 @@ function getMysqlSelectionAssocResult(mysqli $con, string $sql) : array
  *
  * @param int    $price    неформатированная цена
  * @param string $currency знак валюты, по умолчанию - рубля
- * 
+ *
  * @return string форматированная цена
  */
 function getFormattedPrice(int $price, string $currency = '<b class="rub"></b>') : string
@@ -136,7 +136,7 @@ function getFormattedPrice(int $price, string $currency = '<b class="rub"></b>')
  *
  * @param array $array массив, в котором производится поиск
  * @param $value знаначение, которое нужно найти
- * 
+ *
  * @return bool true - если значение найдено, false - если нет или если массив одномерный
  */
 function isInArray(array $array, $value) : bool

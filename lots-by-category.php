@@ -8,7 +8,7 @@ $categoryId = '';
 if (isset($_GET['id'])) {
     $categoryId = mysqli_real_escape_string($con, $_GET['id']);
 } else {
-   http_response_code(404);
+    http_response_code(404);
     header("Location: pages/404.html");
 }
 

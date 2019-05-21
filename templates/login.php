@@ -8,9 +8,9 @@
       </ul>
     </nav>
     <?php $formClass = empty($errors) ? '' : 'form--invalid'; ?>
-    <form class="form container <?=$formClass; ?>" enctype="multipart/form-data" action="login.php" method="post"> <!-- form--invalid -->
+    <form class="form container <?=$formClass; ?>" enctype="multipart/form-data" action="login.php" method="post">
       <h2>Вход</h2>
-        <?php 
+        <?php
             $emailClass = isset($errors['email']) ? 'form__item--invalid' : '';
             $emailError = isset($errors['email']) ? $errors['email'] : '';
         ?>
@@ -19,7 +19,7 @@
         <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?=$email; ?>">
         <span class="form__error"><?=$emailError; ?></span>
       </div>
-        <?php 
+        <?php
             $passClass = isset($errors['password']) ? 'form__item--invalid' : '';
             $passError = isset($errors['password']) ? $errors['password'] : '';
         ?>

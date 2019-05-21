@@ -8,9 +8,9 @@
       </ul>
     </nav>
     <?php $formClass = empty($errors) ? '' : 'form--invalid'; ?>
-    <form class="form container <?=$formClass; ?>" enctype="multipart/form-data" action="sing-up.php" method="post" autocomplete="off"> <!-- form--invalid -->
+    <form class="form container <?=$formClass; ?>" enctype="multipart/form-data" action="sing-up.php" method="post" autocomplete="off">
       <h2>Регистрация нового аккаунта</h2>
-        <?php 
+        <?php
             $emailClass = isset($errors['email']) ? 'form__item--invalid' : '';
             $emailError = isset($errors['email']) ? $errors['email'] : '';
         ?>
@@ -19,7 +19,7 @@
         <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?=$email; ?>">
         <span class="form__error"><?=$emailError; ?></span>
       </div>
-        <?php 
+        <?php
             $passClass = isset($errors['password']) ? 'form__item--invalid' : '';
             $passError = isset($errors['password']) ? $errors['password'] : '';
         ?>
@@ -28,7 +28,7 @@
         <input id="password" type="password" name="password" placeholder="Введите пароль">
         <span class="form__error"><?=$passError; ?></span>
       </div>
-        <?php 
+        <?php
             $nameClass = isset($errors['name']) ? 'form__item--invalid' : '';
             $nameError = isset($errors['name']) ? $errors['name'] : '';
         ?>
@@ -37,7 +37,7 @@
         <input id="name" type="text" name="name" placeholder="Введите имя" value="<?=$newUserName; ?>">
         <span class="form__error"><?=$nameError; ?></span>
       </div>
-        <?php 
+        <?php
             $messageClass = isset($errors['message']) ? 'form__item--invalid' : '';
             $messageError = isset($errors['message']) ? $errors['message'] : '';
         ?>

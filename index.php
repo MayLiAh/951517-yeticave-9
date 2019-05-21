@@ -4,10 +4,6 @@ require_once 'helpers.php';
 require_once 'functions.php';
 require_once 'winners.php';
 
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-
 $limit = 9;
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
@@ -21,7 +17,7 @@ $lotsSql = "SELECT l.name AS name, l.id AS id,
             WHERE l.end_at > CURDATE()
             AND winner_id IS NULL
             ORDER BY l.created_at DESC
-            LIMIT $limit OFFSET $offset";   
+            LIMIT $limit OFFSET $offset";
 $categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
 
 $lots = getMysqlSelectionResult($con, $lotsSql);
