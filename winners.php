@@ -1,8 +1,5 @@
 <?php
 require_once './vendor/autoload.php';
-require_once 'connection.php';
-require_once 'helpers.php';
-require_once 'functions.php';
 
 $withoutWinnersSql = "SELECT id, name FROM lots WHERE winner_id IS NULL
                       AND end_at <= CURDATE()";
