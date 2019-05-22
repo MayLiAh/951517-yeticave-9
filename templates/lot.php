@@ -44,11 +44,11 @@
                 <label for="cost">Ваша ставка</label>
                 <input id="cost" type="text" name="cost" placeholder="<?=$minRate; ?>" value="<?=$cost; ?>">
                 <span class="form__error"><?=$costError; ?></span>
-                <span><?=$success; ?></span>
               </p>
               <button type="submit" class="button" name="submit">Сделать ставку</button>
             </form>
             <?php endif; ?>
+            <span><?=$success; ?></span>
           </div>
           <div class="history">
             <h3>История ставок (<span><?=$ratesCount; ?></span>)</h3>

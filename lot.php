@@ -70,6 +70,19 @@ if (!isset($_SESSION['user_id'])) {
 
 $minRate = $lot['current_cost'] + $lot['rate_step'];
 
+$contentAdress = 'lot.php';
+$contentValues = [ 'categories' => $categories,
+                   'lot' => $lot,
+                   'lotId' => $lotId,
+                   'minRate' => $minRate,
+                   'rates' => $rates,
+                   'ratesCount' => $ratesCount,
+                   'showRate' => $showRate,
+                   'cost' => '',
+                   'success' => '',
+                   'errors' => []
+                 ];
+
 if (isset($_POST['submit']) && $showRate) {
     $errors = [];
     $cost = (int) $_POST['cost'];
@@ -93,23 +106,11 @@ if (isset($_POST['submit']) && $showRate) {
         $lotSql = "UPDATE lots SET current_cost = ? WHERE id = ?";
         $newRate = insertDataMysql($con, $rateSql, $rateData);
         $updatedLot = insertDataMysql($con, $lotSql, $lotData);
-
+        $contentValues['showRate'] = false;
         $contentValues['success'] = 'Ставка успешно добавлена';
     }
 }
 
-$contentAdress = 'lot.php';
-$contentValues = [ 'categories' => $categories,
-                   'lot' => $lot,
-                   'lotId' => $lotId,
-                   'minRate' => $minRate,
-                   'rates' => $rates,
-                   'ratesCount' => $ratesCount,
-                   'showRate' => $showRate,
-                   'cost' => '',
-                   'success' => '',
-                   'errors' => []
-                 ];
 
 $pageContent = include_template($contentAdress, $contentValues);
 
