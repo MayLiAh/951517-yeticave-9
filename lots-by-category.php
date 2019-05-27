@@ -17,11 +17,14 @@ $ids = getMysqlSelectionResult($con, $categoriesIdsSql);
 
 if (!isInArray($ids, $categoryId)) {
     http_response_code(404);
-    //header("Location: pages/404.html");
+    header("Location: pages/404.html");
 }
 
 $limit = 9;
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
+if ($page != (int) $page || $page < 1) {
+    header("Location: lots-by-category.php?id=$categoryId");
+}
 $offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
 
 $allLotsSql = "SELECT id FROM lots WHERE end_at > CURDATE() 
@@ -29,6 +32,10 @@ $allLotsSql = "SELECT id FROM lots WHERE end_at > CURDATE()
 
 $lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
 $pagesCount = ceil($lotsCount / $limit);
+
+if ($page > $pagesCount) {
+    header("Location: lots-by-category.php?id=$categoryId");
+}
 
 $pages = [];
 

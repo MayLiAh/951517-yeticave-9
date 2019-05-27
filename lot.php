@@ -12,8 +12,6 @@ if (isset($_GET['id'])) {
     header("Location: pages/404.html");
 }
 
-
-
 $lotsIdsSql = "SELECT id FROM lots";
 $ids = getMysqlSelectionResult($con, $lotsIdsSql);
 
@@ -110,7 +108,6 @@ if (isset($_POST['submit']) && $showRate) {
         $contentValues['success'] = 'Ставка успешно добавлена';
     }
 }
-
 
 $pageContent = include_template($contentAdress, $contentValues);
 

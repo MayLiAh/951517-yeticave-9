@@ -20,6 +20,9 @@ $search = mysqli_real_escape_string($con, $search);
 
 $limit = 9;
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
+if ($page != (int) $page || $page < 1) {
+    header("Location: search.php?search=$search");
+}
 $offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
 
 $allLotsSql = "SELECT id FROM lots WHERE MATCH(name, about) AGAINST('$search')
@@ -27,6 +30,10 @@ $allLotsSql = "SELECT id FROM lots WHERE MATCH(name, about) AGAINST('$search')
                AND winner_id IS NULL";
 $lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
 $pagesCount = ceil($lotsCount / $limit);
+
+if ($page > $pagesCount) {
+    header("Location: search.php?search=$search");
+}
 
 $pages = [];
 
