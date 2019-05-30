@@ -31,7 +31,7 @@ $allLotsSql = "SELECT id FROM lots WHERE end_at > CURDATE()
                AND winner_id IS NULL AND category_id = $categoryId";
 
 $lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
-$pagesCount = ceil($lotsCount / $limit);
+$pagesCount = ceil($lotsCount / $limit) > 0 ? ceil($lotsCount / $limit) : 1;
 
 if ($page > $pagesCount) {
     header("Location: lots-by-category.php?id=$categoryId");
