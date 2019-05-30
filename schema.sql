@@ -9,7 +9,6 @@ CREATE TABLE users (
   full_name  VARCHAR(50) NOT NULL,
   email      VARCHAR(50) NOT NULL UNIQUE,
   password   VARCHAR(60) NOT NULL,
-  avatar     VARCHAR(100),
   contacts   TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -35,7 +34,7 @@ CREATE TABLE lots (
   winner_id    INT REFERENCES users (id),
   category_id  INT REFERENCES categories (id),
   created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  end_at       TIMESTAMP
+  end_at       TIMESTAMP NULL
 );
 
 ALTER TABLE lots ENGINE = MyISAM;
@@ -52,7 +51,6 @@ CREATE UNIQUE INDEX user_id ON users(id);
 CREATE INDEX user_name ON users(full_name);
 CREATE UNIQUE INDEX user_email ON users(email);
 CREATE INDEX password ON users(password);
-CREATE INDEX avatar ON users(avatar);
 CREATE FULLTEXT INDEX contacts ON users(contacts);
 
 CREATE UNIQUE INDEX category_id ON categories(id);
@@ -60,8 +58,7 @@ CREATE UNIQUE INDEX category_name ON categories(name);
 CREATE UNIQUE INDEX category_code ON categories(symbol_code);
 
 CREATE UNIQUE INDEX lot_id ON lots(id);
-CREATE INDEX lot_name ON lots(name);
-CREATE FULLTEXT INDEX about_lot ON lots(about);
+CREATE FULLTEXT INDEX lot ON lots(name, about);
 CREATE INDEX lot_image ON lots(image);
 CREATE INDEX lot_start_cost ON lots(start_cost);
 CREATE INDEX lot_current_cost ON lots(start_cost);

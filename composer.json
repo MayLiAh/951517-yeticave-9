@@ -1,0 +1,17 @@
+{
+    "name": "mayliah/951517-yeticave-9",
+    "type": "project",
+    "authors": [
+        {
+            "name": "MayLiAh",
+            "email": "may-goldenvol@yandex.ru"
+        }
+    ],
+    "scripts": {
+        "phpcs": "phpcs"
+    },
+    "require": {
+        "swiftmailer/swiftmailer": "^6.2",
+        "squizlabs/php_codesniffer": "*"
+    }
+}

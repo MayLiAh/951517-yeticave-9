@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,6 +5,7 @@
     <title><?=$pageTitle; ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/flatpickr.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="page-wrapper">
@@ -16,8 +16,9 @@
         <a class="main-header__logo">
             <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
         </a>
-        <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru" autocomplete="off">
-            <input type="search" name="search" placeholder="Поиск лота">
+        <form class="main-header__search" method="get" action="search.php" autocomplete="off">
+            <?php $value = isset($_GET['search']) ? $_GET['search'] : ''; ?>
+            <input type="search" name="search" placeholder="Поиск лота" value="<?=$value; ?>">
             <input class="main-header__search-btn" type="submit" name="find" value="Найти">
         </form>
         <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
@@ -53,7 +54,7 @@
         <ul class="nav__list container">
             <?php foreach ($categories as $category) : ?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=$category['name']; ?></a>
+                <a href="lots-by-category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
             </li>
             <?php endforeach; ?>
         </ul>
@@ -99,8 +100,7 @@
         </div>
     </div>
 </footer>
-
-<!--<script src="flatpickr.js"></script>
-<script src="script.js"></script>-->
+<script src="flatpickr.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

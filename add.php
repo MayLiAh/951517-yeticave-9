@@ -6,12 +6,14 @@ require_once 'functions.php';
 
 if (!isset($_SESSION['user_name'])) {
     http_response_code(403);
-    header("Location: index.php");
+    header("Location: login.php");
 }
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-tagsTransforming('strip_tags', $categories);
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $contentAdress = 'add.php';
 $contentValues = [ 'categories' => $categories,
@@ -37,6 +39,9 @@ if (isset($_POST['submit'])) {
         }
     }
 
+    $fileName = isset($_FILES['lot-img']['name']) ? $_FILES['lot-img']['name'] : '';
+    $fileUrl = !empty($fileName) ? "uploads/$fileName" : '';
+
     if (isset($_FILES['lot-img']) && !empty($_FILES['lot-img']['name'])) {
         $fileType = mime_content_type($_FILES['lot-img']['tmp_name']);
         if ($fileType !== 'image/png' && $fileType !== 'image/jpeg') {
@@ -44,12 +49,12 @@ if (isset($_POST['submit'])) {
         }
 
         if (empty($errors)) {
-            $fileName = $_FILES['lot-img']['name'];
             $filePath = __DIR__ . '/uploads/';
-            $fileUrl = 'uploads/' . $fileName;
 
             move_uploaded_file($_FILES['lot-img']['tmp_name'], $filePath . $fileName);
         }
+    } else {
+        $errors['lot-img'] = 'Изображение обязательно к добавлению!';
     }
 
     $name = $_POST['lot-name'];
@@ -72,7 +77,7 @@ if (isset($_POST['submit'])) {
     $contentValues['categoryId'] = $categoryId;
     $contentValues['errors'] = $errors;
 
-    if (empty($errors)) {
+    if (empty($errors) && !empty($fileUrl)) {
         $data = [$name, $message, $fileUrl, $cost, $step, $cost, $userId, $categoryId, $date];
         $sql = "INSERT INTO lots 
                 (name, about, image, start_cost, rate_step, current_cost, user_id, category_id, end_at)
@@ -88,8 +93,6 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => 'Добавление лота',
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

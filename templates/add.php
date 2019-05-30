@@ -2,16 +2,16 @@
       <ul class="nav__list container">
         <?php foreach ($categories as $category) : ?>
         <li class="nav__item">
-          <a href="all-lots.html"><?=$category['name']; ?></a>
+          <a href="lots-by-category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
         </li>
-<?php endforeach; ?>
+        <?php endforeach; ?>
       </ul>
     </nav>
     <?php $formClass = empty($errors) ? '' : 'form--invalid'; ?>
-    <form class="form form--add-lot container <?=$formClass; ?>" enctype="multipart/form-data" action="add.php" method="post"> <!-- form--invalid -->
+    <form class="form form--add-lot container <?=$formClass; ?>" enctype="multipart/form-data" action="add.php" method="post">
       <h2>Добавление лота</h2>
       <div class="form__container-two">
-        <?php 
+        <?php
             $nameClass = isset($errors['lot-name']) ? 'form__item--invalid' : '';
             $nameError = isset($errors['lot-name']) ? $errors['lot-name'] : '';
         ?>
@@ -20,7 +20,7 @@
           <input id="lot-name" type="text" name="lot-name" placeholder="Введите наименование лота" value="<?=$lotName; ?>">
           <span class="form__error"><?=$nameError; ?></span>
         </div>
-        <?php 
+        <?php
             $categoryClass = isset($errors['category']) ? 'form__item--invalid' : '';
             $categoryError = isset($errors['category']) ? $errors['category'] : '';
         ?>
@@ -29,13 +29,15 @@
           <select id="category" name="category">
             <option value="0">Выберите категорию</option>
             <?php foreach ($categories as $category) : ?>
-            <option value="<?=$category['id']; ?>" <?php if ($category['id'] === $categoryId) { echo 'selected'; } ?>><?=$category['name']; ?></option>
+            <option value="<?=$category['id']; ?>" <?php if ($category['id'] === $categoryId) {
+                echo 'selected';
+                           } ?>><?=$category['name']; ?></option>
             <?php endforeach; ?>
           </select>
           <span class="form__error"><?=$categoryError; ?></span>
         </div>
       </div>
-        <?php 
+        <?php
             $messageClass = isset($errors['message']) ? 'form__item--invalid' : '';
             $messageError = isset($errors['message']) ? $errors['message'] : '';
         ?>
@@ -44,7 +46,7 @@
         <textarea id="message" name="message" placeholder="Напишите описание лота"><?=$message; ?></textarea>
         <span class="form__error"><?=$messageError; ?></span>
       </div>
-        <?php 
+        <?php
             $imgClass = isset($errors['lot-img']) ? 'form__item--invalid' : '';
             $imgError = isset($errors['lot-img']) ? $errors['lot-img'] : '';
         ?>
@@ -59,7 +61,7 @@
         </div>
       </div>
       <div class="form__container-three">
-        <?php 
+        <?php
             $rateClass = isset($errors['lot-rate']) ? 'form__item--invalid' : '';
             $rateError = isset($errors['lot-rate']) ? $errors['lot-rate'] : '';
         ?>
@@ -68,7 +70,7 @@
           <input id="lot-rate" type="text" name="lot-rate" placeholder="0" value="<?=$cost; ?>">
           <span class="form__error"><?=$rateError; ?></span>
         </div>
-        <?php 
+        <?php
             $stepClass = isset($errors['lot-step']) ? 'form__item--invalid' : '';
             $stepError = isset($errors['lot-step']) ? $errors['lot-step'] : '';
         ?>
@@ -77,7 +79,7 @@
           <input id="lot-step" type="text" name="lot-step" placeholder="0" value="<?=$step; ?>">
           <span class="form__error"><?=$stepError; ?></span>
         </div>
-        <?php 
+        <?php
             $dateClass = isset($errors['lot-date']) ? 'form__item--invalid' : '';
             $dateError = isset($errors['lot-date']) ? $errors['lot-date'] : '';
         ?>

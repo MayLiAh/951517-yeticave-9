@@ -1,11 +1,10 @@
-<?php require_once 'functions.php'; ?>
     <nav class="nav">
       <ul class="nav__list container">
-        <? foreach ($categories as $category) : ?>
+        <?php foreach ($categories as $category) : ?>
         <li class="nav__item">
-          <a href="all-lots.html"><?=$category['name']; ?></a>
+          <a href="lots-by-category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
         </li>
-        <? endforeach; ?>
+        <?php endforeach; ?>
       </ul>
     </nav>
     <section class="lot-item container">
@@ -35,21 +34,21 @@
               </div>
             </div>
             <?php if (isset($_SESSION['user_name']) && $showRate) : ?>
-            <?php $formClass = empty($errors) ? '' : 'form--invalid'; ?>
+                <?php $formClass = empty($errors) ? '' : 'form--invalid'; ?>
             <form class="lot-item__form <?=$formClass; ?>" action="lot.php?id=<?=$lotId; ?>" method="post" autocomplete="off">
-            <?php 
-            $costClass = isset($errors['cost']) ? 'form__item--invalid' : '';
-            $costError = isset($errors['cost']) ? $errors['cost'] : '';
-            ?>
+                <?php
+                $costClass = isset($errors['cost']) ? 'form__item--invalid' : '';
+                $costError = isset($errors['cost']) ? $errors['cost'] : '';
+                ?>
               <p class="lot-item__form-item form__item <?=$costClass; ?>">
                 <label for="cost">Ваша ставка</label>
                 <input id="cost" type="text" name="cost" placeholder="<?=$minRate; ?>" value="<?=$cost; ?>">
                 <span class="form__error"><?=$costError; ?></span>
-                <span><?=$success; ?></span>
               </p>
               <button type="submit" class="button" name="submit">Сделать ставку</button>
             </form>
             <?php endif; ?>
+            <span><?=$success; ?></span>
           </div>
           <div class="history">
             <h3>История ставок (<span><?=$ratesCount; ?></span>)</h3>

@@ -6,7 +6,9 @@ require_once 'functions.php';
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-tagsTransforming('strip_tags', $categories);
+array_walk_recursive($categories, function (&$value, $key) {
+    $value = strip_tags($value);
+});
 
 $emailsSql = "SELECT email FROM users";
 $emails = getMysqlSelectionResult($con, $emailsSql);
@@ -19,7 +21,7 @@ $contentValues = [ 'categories' => $categories,
                    'errors' => []
                  ];
 
-$passwordReg = '/^[0-9A-Za-z]^/';
+$passwordReg = '^[0-9A-Za-z]^';
 
 if (isset($_POST['submit'])) {
     $errors = [];
@@ -63,8 +65,6 @@ $pageContent = include_template($contentAdress, $contentValues);
 $layoutAdress = 'layout.php';
 $layoutValues = [
                  'pageTitle' => 'Регистрация',
-                 'isAuth' => $isAuth,
-                 'userName' => $userName,
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

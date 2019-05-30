@@ -1,4 +1,7 @@
 <?php
+
+date_default_timezone_set("Europe/Moscow");
+
 /**
  * Создает массив с оставшимися до конца торгов часами и отформатированным временем
  *
@@ -61,7 +64,7 @@ function getElapsedTime(string $date) : string
  * @param mysqli $con  ресурс соединения с базой данных
  * @param string $sql  запрос в базу данных
  * @param array $data  значения для подстановки в подготовленный запрос
- * 
+ *
  * @return int id добавленной или измененной строки
  */
 function insertDataMysql(mysqli $con, string $sql, array $data)
@@ -81,7 +84,7 @@ function insertDataMysql(mysqli $con, string $sql, array $data)
  *
  * @param mysqli $con ресурс соединения с базой данных
  * @param string $sql запрос в базу данных
- * 
+ *
  * @return array созданный массив
  */
 function getMysqlSelectionResult(mysqli $con, string $sql) : array
@@ -101,7 +104,7 @@ function getMysqlSelectionResult(mysqli $con, string $sql) : array
  *
  * @param mysqli $con ресурс соединения с базой данных
  * @param string $sql запрос в базу данных
- * 
+ *
  * @return array созданный массив
  */
 function getMysqlSelectionAssocResult(mysqli $con, string $sql) : array
@@ -121,10 +124,10 @@ function getMysqlSelectionAssocResult(mysqli $con, string $sql) : array
  *
  * @param int    $price    неформатированная цена
  * @param string $currency знак валюты, по умолчанию - рубля
- * 
+ *
  * @return string форматированная цена
  */
-function getFormattedPrice(int $price, string $currency = '₽') : string
+function getFormattedPrice(int $price, string $currency = '<b class="rub"></b>') : string
 {
     $roundPrice = ceil($price);
     $formattedPrice = $roundPrice < 1000 ? $roundPrice : number_format($roundPrice, 0, '.', ' ');
@@ -136,7 +139,7 @@ function getFormattedPrice(int $price, string $currency = '₽') : string
  *
  * @param array $array массив, в котором производится поиск
  * @param $value знаначение, которое нужно найти
- * 
+ *
  * @return bool true - если значение найдено, false - если нет или если массив одномерный
  */
 function isInArray(array $array, $value) : bool
@@ -151,26 +154,4 @@ function isInArray(array $array, $value) : bool
         }
     }
     return false;
-}
-/**
- * Преобразует переданный массив или массивы согласно заданому параметру
- *
- * @param string $method способ преобразования, возможно использование функций
- * strip_tags и htmlspecialchars с параметрами по умолчанию.
- * Если $method !== 'htmlspecialchars', будет применена функция strip_tags
- * @param array  $arrays массив или массивы, в которых нужно удалить или преобразовать теги
- * 
- * @return bool true - если преобразование прошло успешно, иначе false
- */
-function tagsTransforming(string $method, array ...$arrays)
-{
-    if ($method === 'htmlspecialchars') {
-        return array_walk_recursive($arrays, function (&$value, $key) {
-            $value = htmlspecialchars($value);
-        });
-    }
-
-    return array_walk_recursive($arrays, function (&$value, $key) {
-        $value = strip_tags($value);
-    });
 }
