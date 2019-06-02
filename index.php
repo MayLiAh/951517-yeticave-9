@@ -26,7 +26,7 @@ $categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
 $lots = getMysqlSelectionResult($con, $lotsSql);
 $categories = getMysqlSelectionResult($con, $categoriesSql);
 $lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
-$pagesCount = ceil($lotsCount / $limit);
+$pagesCount = ceil($lotsCount / $limit) > 0 ? ceil($lotsCount / $limit) : 1;
 
 if ($page > $pagesCount) {
     header("Location: index.php");
@@ -52,13 +52,6 @@ foreach ($lots as $lot) {
     $lot['cost_type'] = $costType;
     $newLots[] = $lot;
 }
-
-array_walk_recursive($newLots, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $contentAdress = 'index.php';
 $contentValues = [ 'categories' => $categories,

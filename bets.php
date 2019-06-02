@@ -6,7 +6,7 @@ require_once 'functions.php';
 
 if (!isset($_SESSION['user_name'])) {
     http_response_code(403);
-    header("Location: index.php");
+    header("Location: login.php");
 }
 
 $userId = mysqli_real_escape_string($con, $_SESSION['user_id']);
@@ -14,12 +14,9 @@ $rates = [];
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $lotsIdsSql = "SELECT lot_id FROM rates WHERE user_id = $userId
-               GROUP BY lot_id
+               GROUP BY lot_id, created_at
                ORDER BY created_at DESC";
 $lotsIds = getMysqlSelectionResult($con, $lotsIdsSql);
 
@@ -42,7 +39,7 @@ if (!empty($lotsIds)) {
         $modifiedRate['timer_status'] = '';
         $modifiedRate['user_contacts'] = '';
 
-        if (!is_null($rate['winner_id'])) {
+        if (isset($rate['winner_id']) && !empty($rate['winner_id'])) {
             $winnerId = mysqli_real_escape_string($con, $rate['winner_id']);
             if ($winnerId === $_SESSION['user_id']) {
                 $contactsSql = "SELECT contacts FROM users WHERE id = $winnerId";
@@ -71,10 +68,6 @@ if (!empty($lotsIds)) {
         $rates[] = $modifiedRate;
     }
 }
-
-array_walk_recursive($rates, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $contentAdress = 'bets.php';
 $contentValues = [ 'categories' => $categories,

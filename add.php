@@ -11,9 +11,6 @@ if (!isset($_SESSION['user_name'])) {
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $contentAdress = 'add.php';
 $contentValues = [ 'categories' => $categories,
@@ -27,35 +24,15 @@ $contentValues = [ 'categories' => $categories,
                  ];
 
 if (isset($_POST['submit'])) {
-    $tommorow = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
-    $errors = [];
-    foreach ($_POST as $key => $value) {
-        if (empty($value) && $key !== 'submit') {
-            $errors[$key] = 'Поле должно быть заполнено!';
-        } elseif (($key === 'lot-rate' || $key === 'lot-step') && ($value <= 0 || floor($value) != $value)) {
-            $errors[$key] = 'Введите корректную цену';
-        } elseif ($key === 'lot-date' && (!is_date_valid($value) || strtotime($value) < $tommorow)) {
-            $errors[$key] = 'Введите корректную дату';
-        }
-    }
+    $rate = $_POST['lot-rate'];
+    $rateStep = $_POST['lot-step'];
+    $date = $_POST['lot-date'];
+    $errors = array_merge(checkFieldsFilling($_POST), checkLotFields($rate, $rateStep, $date));
+
+    $errors = array_merge($errors, checkAddFile($_FILES, 'image/png', 'image/jpeg'));
 
     $fileName = isset($_FILES['lot-img']['name']) ? $_FILES['lot-img']['name'] : '';
     $fileUrl = !empty($fileName) ? "uploads/$fileName" : '';
-
-    if (isset($_FILES['lot-img']) && !empty($_FILES['lot-img']['name'])) {
-        $fileType = mime_content_type($_FILES['lot-img']['tmp_name']);
-        if ($fileType !== 'image/png' && $fileType !== 'image/jpeg') {
-            $errors['lot-img'] = 'Выберите файл формата .png, .jpeg или .jpg';
-        }
-
-        if (empty($errors)) {
-            $filePath = __DIR__ . '/uploads/';
-
-            move_uploaded_file($_FILES['lot-img']['tmp_name'], $filePath . $fileName);
-        }
-    } else {
-        $errors['lot-img'] = 'Изображение обязательно к добавлению!';
-    }
 
     $name = $_POST['lot-name'];
     $message = $_POST['message'];

@@ -4,8 +4,58 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4606b30a2f799f3a3b4b189e5160e786",
+    "content-hash": "9139ef47420bc33465d057f352557394",
     "packages": [
+        {
+            "name": "dater/dater",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barbushin/dater.git",
+                "reference": "316b5c1f4fd2cd0b9ba3b598654da39ed17ce8b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barbushin/dater/zipball/316b5c1f4fd2cd0b9ba3b598654da39ed17ce8b3",
+                "reference": "316b5c1f4fd2cd0b9ba3b598654da39ed17ce8b3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Dater": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Barbushin",
+                    "email": "barbushin@gmail.com",
+                    "homepage": "http://linkedin.com/in/barbushin"
+                }
+            ],
+            "description": "Compact PHP library for working with date/time in different formats & timezones.",
+            "homepage": "https://github.com/barbushin/dater",
+            "keywords": [
+                "date",
+                "datetime",
+                "php",
+                "time",
+                "timezone"
+            ],
+            "time": "2017-08-23T06:59:53+00:00"
+        },
         {
             "name": "doctrine/lexer",
             "version": "v1.0.1",

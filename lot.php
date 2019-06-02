@@ -39,15 +39,6 @@ $ratesSql = "SELECT user_id, r.cost, u.full_name AS user_name,
 $lot = getMysqlSelectionAssocResult($con, $lotSql);
 $categories = getMysqlSelectionResult($con, $categoriesSql);
 $rates = getMysqlSelectionResult($con, $ratesSql);
-array_walk_recursive($lot, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-array_walk_recursive($rates, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $ratesCount = empty($rates) ? 0 : count($rates);
 $showRate = true;
@@ -82,12 +73,10 @@ $contentValues = [ 'categories' => $categories,
                  ];
 
 if (isset($_POST['submit']) && $showRate) {
-    $errors = [];
+    $errors = checkFieldsFilling($_POST);
     $cost = (int) $_POST['cost'];
 
-    if (empty($cost)) {
-        $errors['cost'] = 'Поле должно быть заполнено!';
-    } elseif ($cost < $minRate || $cost != round($cost)) {
+    if ($cost < $minRate || $cost != round($cost)) {
         $errors['cost'] = 'Введите корректную цену!';
     }
 

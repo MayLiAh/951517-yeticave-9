@@ -6,9 +6,6 @@ require_once 'functions.php';
 
 $categoriesSql = "SELECT id, name FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $emailsSql = "SELECT email FROM users";
 $emails = getMysqlSelectionResult($con, $emailsSql);
@@ -24,25 +21,13 @@ $contentValues = [ 'categories' => $categories,
 $passwordReg = '^[0-9A-Za-z]^';
 
 if (isset($_POST['submit'])) {
-    $errors = [];
-    foreach ($_POST as $key => $value) {
-        if (empty($value) && $key !== 'submit') {
-            $errors[$key] = 'Поле должно быть заполнено!';
-        } elseif ($key === 'email' && isInArray($emails, $value)) {
-            $errors[$key] = 'Уже существует пользователь с таким e-mail';
-        } elseif ($key === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $errors[$key] = 'Введите корректный e-mail';
-        } elseif ($key === 'password' && strlen($value) < 6) {
-            $errors[$key] = 'Пароль не должен быть короче 6 символов';
-        } elseif ($key === 'password' && !preg_match($passwordReg, $value)) {
-            $errors[$key] = 'Пароль может содержать только цифры и латинские буквы';
-        }
-    }
-
     $email = $_POST['email'];
+    $pass = $_POST['password'];
+    $errors = array_merge(checkFieldsFilling($_POST), checkEmail($email, $emails), checkPassword($pass, $passwordReg));
+
+    $password = password_hash($pass, PASSWORD_DEFAULT);
     $newUserName = $_POST['name'];
     $message = $_POST['message'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     $contentValues['email'] = $email;
     $contentValues['newUserName'] = $newUserName;

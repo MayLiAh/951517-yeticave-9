@@ -6,9 +6,6 @@ require_once 'functions.php';
 
 $categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
 $categories = getMysqlSelectionResult($con, $categoriesSql);
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
 
 $search = '';
 
@@ -29,7 +26,7 @@ $allLotsSql = "SELECT id FROM lots WHERE MATCH(name, about) AGAINST('$search')
                AND end_at > CURDATE()
                AND winner_id IS NULL";
 $lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
-$pagesCount = ceil($lotsCount / $limit);
+$pagesCount = ceil($lotsCount / $limit) > 0 ? ceil($lotsCount / $limit) : 1;
 
 if ($page > $pagesCount) {
     header("Location: search.php?search=$search");
@@ -74,9 +71,7 @@ if (!empty($search)) {
         $lot['cost_type'] = $costType;
         $newLots[] = $lot;
     }
-    array_walk_recursive($newLots, function (&$value, $key) {
-        $value = strip_tags($value);
-    });
+    
     $contentValues['lots'] = $newLots;
 }
 

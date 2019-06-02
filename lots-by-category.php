@@ -74,16 +74,6 @@ foreach ($lots as $lot) {
     $newLots[] = $lot;
 }
 
-array_walk_recursive($newLots, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-array_walk_recursive($categories, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-array_walk_recursive($category, function (&$value, $key) {
-    $value = strip_tags($value);
-});
-
 $contentAdress = 'lots-by-category.php';
 $contentValues = [ 'categories' => $categories,
                    'categoryName' => $category['name'],
