@@ -1,6 +1,6 @@
 <?php
 
-require_once 'connection.php';
+require_once 'functions.php';
 
 $_SESSION = [];
 header("Location: index.php");

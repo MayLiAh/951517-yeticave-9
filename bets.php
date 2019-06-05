@@ -1,38 +1,23 @@
 <?php
 
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-if (!isset($_SESSION['user_name'])) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
     header("Location: login.php");
 }
 
-$userId = mysqli_real_escape_string($con, $_SESSION['user_id']);
+$userId = (int) $_SESSION['user_id'];
 $rates = [];
 
-$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-
-$lotsIdsSql = "SELECT lot_id FROM rates WHERE user_id = $userId
-               GROUP BY lot_id, created_at
-               ORDER BY created_at DESC";
-$lotsIds = getMysqlSelectionResult($con, $lotsIdsSql);
+$categories = getCategories();
+$lotsIds = getUserRatesLotsIds($userId);
 
 if (!empty($lotsIds)) {
     foreach ($lotsIds as $lotId) {
-        $id = mysqli_real_escape_string($con, $lotId['lot_id']);
-        $rateSql = "SELECT l.id AS lot_id, l.image AS lot_img, l.name AS lot_name, l.end_at AS lot_end,
-                   l.winner_id AS winner_id, c.name AS category_name, r.cost AS cost, r.created_at AS rate_time
-                   FROM lots AS l JOIN categories AS c ON c.id = l.category_id 
-                   JOIN rates AS r ON r.lot_id = l.id
-                   WHERE r.user_id = $userId AND l.id = $id
-                   AND r.created_at = 
-                   (SELECT MAX(r.created_at) FROM rates AS r
-                   JOIN lots AS l ON lot_id = l.id
-                   WHERE r.user_id = $userId AND l.id = $id)";
-        $rate = getMysqlSelectionAssocResult($con, $rateSql);
+        $id = $lotId['lot_id'];
+        $rate = getLastRate($userId, $id);
         $modifiedRate = $rate;
         $modifiedRate['rate_class'] = '';
         $modifiedRate['timer_class'] = '';
@@ -40,11 +25,10 @@ if (!empty($lotsIds)) {
         $modifiedRate['user_contacts'] = '';
 
         if (isset($rate['winner_id']) && !empty($rate['winner_id'])) {
-            $winnerId = mysqli_real_escape_string($con, $rate['winner_id']);
+            $winnerId = $rate['winner_id'];
             if ($winnerId === $_SESSION['user_id']) {
-                $contactsSql = "SELECT contacts FROM users WHERE id = $winnerId";
-                $contacts = getMysqlSelectionAssocResult($con, $contactsSql);
-                $modifiedRate['user_contacts'] = $contacts['contacts'];
+                $contacts = getUserContacts($userId);
+                $modifiedRate['user_contacts'] = $contacts;
                 $modifiedRate['rate_class'] = 'rates__item--win';
                 $modifiedRate['timer_class'] = 'timer--win';
                 $modifiedRate['timer_status'] = 'Ставка выиграла';

@@ -1,14 +1,9 @@
 <?php
-
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-
-$usersSql = "SELECT id, full_name, email, password FROM users";
-$users = getMysqlSelectionResult($con, $usersSql);
+$categories = getCategories();
+$users = getUsers();
 
 $contentAdress = 'login.php';
 $contentValues = [ 'categories' => $categories,
@@ -18,16 +13,15 @@ $contentValues = [ 'categories' => $categories,
 
 if (isset($_POST['submit'])) {
     $errors = checkFieldsFilling($_POST);
-    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $email = trim($_POST['email']);
 
-    if (!isInArray($users, $email)) {
+    if (!isInArray($users, $email) && !empty($email)) {
         $errors['email'] = 'Пользователя с таким e-mail не существует';
     }
 
     if (empty($errors)) {
         $password = $_POST['password'];
-        $userSql = "SELECT id, full_name, password FROM users WHERE email = '$email'";
-        $user = getMysqlSelectionAssocResult($con, $userSql);
+        $user = getUserByEmail($email);
         $rightPassword = $user['password'];
 
         if (!password_verify($password, $rightPassword)) {
@@ -49,7 +43,7 @@ $pageContent = include_template($contentAdress, $contentValues);
 
 $layoutAdress = 'layout.php';
 $layoutValues = [
-                 'pageTitle' => 'Регистрация',
+                 'pageTitle' => 'Вход',
                  'categories' => $categories,
                  'pageContent' => $pageContent
                 ];

@@ -1,31 +1,23 @@
 <?php
 
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-$categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-
+$categories = getCategories();
 $search = '';
 
 if (isset($_GET['search'])) {
     $search = trim($_GET['search']);
 }
 
-$search = mysqli_real_escape_string($con, $search);
-
 $limit = 9;
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 if ($page != (int) $page || $page < 1) {
     header("Location: search.php?search=$search");
 }
-$offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
+$offset = ($page - 1) * $limit;
 
-$allLotsSql = "SELECT id FROM lots WHERE MATCH(name, about) AGAINST('$search')
-               AND end_at > CURDATE()
-               AND winner_id IS NULL";
-$lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
+$lotsCount = getActiveLotsCount('search', $search);
 $pagesCount = ceil($lotsCount / $limit) > 0 ? ceil($lotsCount / $limit) : 1;
 
 if ($page > $pagesCount) {
@@ -46,23 +38,11 @@ $contentValues = [ 'categories' => $categories,
                   ];
 
 if (!empty($search)) {
-    $lotsSql = "SELECT l.name AS name, l.about AS about,
-                l.id AS id, c.name AS category, 
-                current_cost, image, end_at 
-                FROM lots AS l JOIN categories AS c 
-                ON c.id = category_id
-                WHERE MATCH(l.name, l.about) AGAINST('$search')
-                AND l.end_at > CURDATE()
-                AND winner_id IS NULL
-                ORDER BY l.created_at DESC
-                LIMIT $limit OFFSET $offset";
-    $lots = getMysqlSelectionResult($con, $lotsSql);
+    $lots = getActiveLots($limit, $offset, 'search', $search);
     $newLots = [];
     foreach ($lots as $lot) {
-        $lotId = mysqli_real_escape_string($con, $lot['id']);
-        $countSql = "SELECT * FROM rates
-                     WHERE lot_id = $lotId";
-        $count = count(getMysqlSelectionResult($con, $countSql));
+        $lotId = $lot['id'];
+        $count = getLotRatesCount($lotId);
         $costType = 'Стартовая цена';
         if ($count > 0) {
             $rateForm = get_noun_plural_form($count, 'ставка', 'ставки', 'ставок');

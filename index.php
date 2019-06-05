@@ -1,5 +1,4 @@
 <?php
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 require_once 'winners.php';
@@ -9,23 +8,11 @@ $page = isset($_GET['page']) ? $_GET['page'] : 1;
 if ($page != (int) $page || $page < 1) {
     header("Location: index.php");
 }
-$offset = mysqli_real_escape_string($con, ($page - 1) * $limit);
+$offset = ($page - 1) * $limit;
 
-$allLotsSql = "SELECT id FROM lots WHERE end_at > CURDATE() AND winner_id IS NULL";
-$lotsSql = "SELECT l.name AS name, l.id AS id, 
-            c.name AS category, 
-            current_cost, image, end_at 
-            FROM lots AS l JOIN categories AS c 
-            ON c.id = category_id
-            WHERE l.end_at > CURDATE()
-            AND winner_id IS NULL
-            ORDER BY l.created_at DESC
-            LIMIT $limit OFFSET $offset";
-$categoriesSql = "SELECT id, name, symbol_code FROM categories ORDER BY id";
-
-$lots = getMysqlSelectionResult($con, $lotsSql);
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-$lotsCount = count(getMysqlSelectionResult($con, $allLotsSql));
+$lots = getActiveLots($limit, $offset);
+$categories = getCategories();
+$lotsCount = getActiveLotsCount();
 $pagesCount = ceil($lotsCount / $limit) > 0 ? ceil($lotsCount / $limit) : 1;
 
 if ($page > $pagesCount) {
@@ -40,10 +27,8 @@ for ($i = 1; $i <= $pagesCount; $i++) {
 
 $newLots = [];
 foreach ($lots as $lot) {
-    $lotId = mysqli_real_escape_string($con, $lot['id']);
-    $countSql = "SELECT * FROM rates
-                 WHERE lot_id = $lotId";
-    $count = count(getMysqlSelectionResult($con, $countSql));
+    $lotId = $lot['id'];
+    $count = getLotRatesCount($lotId);
     $costType = 'Стартовая цена';
     if ($count > 0) {
         $rateForm = get_noun_plural_form($count, 'ставка', 'ставки', 'ставок');

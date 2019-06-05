@@ -1,44 +1,26 @@
 <?php
 
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
 $lotId = '';
 if (isset($_GET['id'])) {
-    $lotId = mysqli_real_escape_string($con, $_GET['id']);
+    $lotId = (int) $_GET['id'];
 } else {
     http_response_code(404);
     header("Location: pages/404.html");
 }
 
-$lotsIdsSql = "SELECT id FROM lots";
-$ids = getMysqlSelectionResult($con, $lotsIdsSql);
+$ids = getAllLotsIds();
 
 if (!isInArray($ids, $lotId)) {
     http_response_code(404);
     header("Location: pages/404.html");
 }
 
-$lotSql = "SELECT l.name AS name, user_id,
-            c.name AS category, about, current_cost,
-            rate_step, image, end_at 
-            FROM lots AS l JOIN categories AS c
-            ON c.id = category_id 
-            WHERE l.id = $lotId";
-    
-$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
-
-$ratesSql = "SELECT user_id, r.cost, u.full_name AS user_name, 
-             r.created_at AS rate_time 
-             FROM rates AS r JOIN users AS u
-             ON u.id = user_id
-             WHERE r.lot_id = $lotId
-             ORDER BY r.created_at DESC";
-
-$lot = getMysqlSelectionAssocResult($con, $lotSql);
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-$rates = getMysqlSelectionResult($con, $ratesSql);
+$lot = getLotById($lotId);
+$categories = getCategories();
+$rates = getLotRates($lotId);
 
 $ratesCount = empty($rates) ? 0 : count($rates);
 $showRate = true;
@@ -84,15 +66,11 @@ if (isset($_POST['submit']) && $showRate) {
     $contentValues['errors'] = $errors;
 
     if (empty($errors)) {
-        $userId = $_SESSION['user_id'];
+        $userId = (int) $_SESSION['user_id'];
         $rateData = [$cost, $userId, $lotId];
-        $rateSql = "INSERT INTO rates 
-                (cost, user_id, lot_id)
-                VALUES (?, ?, ?)";
         $lotData = [$cost, $lotId];
-        $lotSql = "UPDATE lots SET current_cost = ? WHERE id = ?";
-        $newRate = insertDataMysql($con, $rateSql, $rateData);
-        $updatedLot = insertDataMysql($con, $lotSql, $lotData);
+        $newRate = setNewRate($rateData);
+        $updatedLot = setRateInLot($lotData);
         $contentValues['showRate'] = false;
         $contentValues['success'] = 'Ставка успешно добавлена';
     }

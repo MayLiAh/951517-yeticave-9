@@ -1,6 +1,5 @@
 <?php
 
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
@@ -9,8 +8,7 @@ if (!isset($_SESSION['user_name'])) {
     header("Location: login.php");
 }
 
-$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
-$categories = getMysqlSelectionResult($con, $categoriesSql);
+$categories = getCategories();
 
 $contentAdress = 'add.php';
 $contentValues = [ 'categories' => $categories,
@@ -56,11 +54,7 @@ if (isset($_POST['submit'])) {
 
     if (empty($errors) && !empty($fileUrl)) {
         $data = [$name, $message, $fileUrl, $cost, $step, $cost, $userId, $categoryId, $date];
-        $sql = "INSERT INTO lots 
-                (name, about, image, start_cost, rate_step, current_cost, user_id, category_id, end_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $newLotId = insertDataMysql($con, $sql, $data);
+        $newLotId = setNewLot($data);
         header("Location: lot.php?id=$newLotId");
     }
 }

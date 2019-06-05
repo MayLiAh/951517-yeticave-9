@@ -1,25 +1,17 @@
 <?php
 require_once './vendor/autoload.php';
 
-$withoutWinnersSql = "SELECT id, name FROM lots WHERE winner_id IS NULL
-                      AND end_at <= CURDATE()";
-$withoutWinners = getMysqlSelectionResult($con, $withoutWinnersSql);
+$withoutWinners = getExpiredLotsWithoutWinners();
 
 foreach ($withoutWinners as $withoutWinner) {
-    $lotId = mysqli_real_escape_string($con, $withoutWinner['id']);
+    $lotId = $withoutWinner['id'];
     $lotName = $withoutWinner['name'];
-    $lotsIdsSql = "SELECT lot_id FROM rates";
-    $lotsIds = getMysqlSelectionResult($con, $lotsIdsSql);
+    $lotsIds = getLotsIdsFromRates();
     if (isInArray($lotsIds, $lotId)) {
-        $winnerSql = "SELECT user_id FROM rates WHERE lot_id = $lotId
-                      ORDER BY created_at DESC
-                      LIMIT 1 OFFSET 0";
-        $winnerId = getMysqlSelectionAssocResult($con, $winnerSql)['user_id'];
+        $winnerId = getWinnerId($lotId);
         $data = [$winnerId, $lotId];
-        $sql = "UPDATE lots SET winner_id = ? WHERE id = ?";
-        $winner = insertDataMysql($con, $sql, $data);
-        $userSql = "SELECT email, full_name FROM users WHERE id = $winnerId";
-        $user = getMysqlSelectionAssocResult($con, $userSql);
+        $winner = setWinner($data);
+        $user = getWinner($winnerId);
         $email = $user['email'];
         $userName = $user['full_name'];
 

@@ -1,14 +1,10 @@
 <?php
 
-require_once 'connection.php';
 require_once 'helpers.php';
 require_once 'functions.php';
 
-$categoriesSql = "SELECT id, name FROM categories ORDER BY id";
-$categories = getMysqlSelectionResult($con, $categoriesSql);
-
-$emailsSql = "SELECT email FROM users";
-$emails = getMysqlSelectionResult($con, $emailsSql);
+$categories = getCategories();
+$emails = getEmails();
 
 $contentAdress = 'sing-up.php';
 $contentValues = [ 'categories' => $categories,
@@ -36,11 +32,7 @@ if (isset($_POST['submit'])) {
 
     if (empty($errors)) {
         $data = [$newUserName, $email, $password, $message];
-        $sql = "INSERT INTO users 
-                (full_name, email, password, contacts)
-                VALUES (?, ?, ?, ?)";
-
-        $newUser = insertDataMysql($con, $sql, $data);
+        $newUser = setNewUser($data);
         header("Location: login.php");
     }
 }
